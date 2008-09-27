@@ -140,6 +140,16 @@ class ListTestCase(unittest.TestCase):
         x = v.List()
         self.assertTrue(x.validate([1,2,3]))
 
+    def test_good_003(self):
+        """ must validate non-empty lists """
+        x = v.List("foo")
+        self.assertTrue(x.validate(["foo", "foo", "foo"]))
+
+    def test_bad_001(self):
+        """ must invalidate non-empty lists """
+        x = v.List("foo")
+        self.assertFalse(x.validate(["foo", "bar"]))
+
     def test_validators_good_001(self):
         """ must validate all elements with the same validator if only one validator is set """
         x = v.List(v.Int(10))
@@ -218,6 +228,17 @@ class DictTestCase(unittest.TestCase):
                     'key2': 15,
                     }))
 
+    def test_good_004(self):
+        """ must validate by few keys and values """
+        x = v.Dict({
+                "firstName": v.String(),
+                "lastName": v.String(),
+                })
+        self.assertTrue(x.validate({
+                    "lastName": "Smith",
+                    "firstName": "John",
+                    }))
+
     def test_bad_001(self):
         """ must invalidate non-hashes """
         x = v.Dict()
@@ -244,6 +265,17 @@ class DictTestCase(unittest.TestCase):
         self.assertFalse(x.validate({
                     'key0': 0,
                     'key1': 10,
+                    }))
+
+    def test_bad_004(self):
+        """ must invalidate by few keys and values """
+        x = v.Dict({
+                "firstName": v.String(),
+                "lastName": v.String(),
+                })
+        self.assertFalse(x.validate({
+                    "foo": "Smith",
+                    "bar": "John",
                     }))
 
 

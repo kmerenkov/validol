@@ -14,17 +14,28 @@
 import re
 
 
+TYPE_OBJ = 0
+TYPE_VALIDATOR = 1
+TYPE_ITERABLE = 2
+
+
+
+def kind_of(obj):
+    if getattr(obj, "validate", False):
+        return TYPE_VALIDATOR
+    elif getattr(obj, "__iter__", False):
+        return TYPE_ITERABLE
+    else:
+        return TYPE_OBJ
+
+
+class Anything(object):
+    def validate(self, data):
+        return True
+
+
 class Int(object):
-    """ Validates integers """
     def __init__(self, exact=None, range=None):
-        """
-        By default validates any integer value.
-        - 'exact': when specified, this in only this integer will be validated,
-        other will be invalid.
-        - 'range': range is a tuple, first element is min, second is max, both
-        elements may be integer or None, thus you can set only max boundary, or
-        only min, or both. Ignored when 'exact' is specified.
-        """
         # validate range
         if range is not None:
             rmin,rmax = range
@@ -35,8 +46,6 @@ class Int(object):
         self.exact = exact
 
     def __check_range(self, range, data):
-        """ Validates range, this function is used internally, you don't really
-        want to use it """
         if range is not None:
             rmin, rmax = range
             if rmin is not None:
@@ -48,10 +57,6 @@ class Int(object):
         return True
 
     def validate(self, data):
-        """
-        Validates data according to specified information on initializing this object.
-        Returns True if data is valid, False otherwise.
-        """
         if type(data) != type(0):
             return False
         if self.exact is not None:
@@ -67,28 +72,13 @@ class Int(object):
 
 
 class String(object):
-    """ Validates strings """
     def __init__(self, exact=None, regex=None):
-        """
-        By default, validates any string.
-        - 'exact': when specified, this and only this string will be validated,
-        others will be invalid.
-        - 'regex': can be one of the following:
-                   - string (then regex is compiled automagically),
-                   - None (default, don't perform regex searching),
-                   - compiled regex.
-          Used for regex validation.
-        """
         if regex is not None and type(regex) == type(""):
             regex = re.compile(regex)
         self.regex = regex
         self.exact = exact
 
     def validate(self, data):
-        """
-        Validates data according to specified information on initializing this object.
-        Returns True if data is valid, False otherwise.
-        """
         if type(data) != type(""):
             return False
         if self.exact is not None:
@@ -106,31 +96,18 @@ class String(object):
 
 
 class Maybe(object):
-    """
-    Maybe is a magic type of data, it validates
-    if one of its children' validators validate
-    your data. Think of it as of "OR"
-    """
     def __init__(self, validators=[]):
-        """
-        By default doesn't validate anything, you have to
-        set at least one validator.
-        - 'validators': list of other validators, such as
-                        Int, String, Bool, or anything else.
-                        If at least one of specified validators
-                        can validate your data - then validation
-                        will be successful.
-        """
         self.validators = validators
 
     def validate(self, data):
-        """
-        Validates data according to specified information on initializing this object.
-        Returns True if data is valid, False otherwise.
-        """
         for validator in self.validators:
-            if validator.validate(data):
-                return True
+            kind = kind_of(validator)
+            if kind == TYPE_VALIDATOR:
+                if validator.validate(data):
+                    return True
+            elif kind == TYPE_OBJ:
+                if validator == data:
+                    return True
         return False
 
     def __str__(self):
@@ -138,43 +115,28 @@ class Maybe(object):
 
 
 class List(object):
-    """ Validates lists """
-    def __init__(self, validators=[]):
-        """
-        By default validates any list at all.
-        - 'validators': validators to validate list items.
-             If validator is passed there - then all list items
-           are supposed to be validated by this validator
-             If many validators were specified, then
-           strict validation is performed, i.e.
-           list must have strict length and strict order
-           of elements.
-        """
-        self.__one_validator = False
-        if getattr(validators, "validate", False):
-            self.__one_validator = True
-            self.validators = [validators]
-        else:
-            self.validators = validators
+    def __init__(self, validators=Anything()):
+        self.validators = validators
 
     def validate(self, data):
-        """
-        Validates data according to specified information on initializing this object.
-        Returns True if data is valid, False otherwise.
-        """
         if type(data) != type([]):
             return False
-        if self.__one_validator:
+        kind = kind_of(self.validators)
+        if kind == TYPE_VALIDATOR:
             # validate all elements with only one validator
             for element in data:
-                if not self.validators[0].validate(element):
+                if not self.validators.validate(element):
                     return False
-        elif not self.__one_validator and len(self.validators) > 0:
+        elif kind == TYPE_ITERABLE:
             # strict validation
             if len(self.validators) != len(data):
                 return False
             for element,validator in zip(data, self.validators):
                 if not validator.validate(element):
+                    return False
+        else:
+            for element in data:
+                if element != self.validators:
                     return False
         # if we don't have any validators set, just check types
         return True
@@ -184,20 +146,10 @@ class List(object):
 
 
 class Bool(object):
-    """ Validates bool """
     def __init__(self, exact=None):
-        """
-        By default validates every bool.
-        - 'exact': if exact is specified, then only specified
-                   bool value will be validated.
-        """
         self.exact = exact
 
     def validate(self, data):
-        """
-        Validates data according to specified information on initializing this object.
-        Returns True if data is valid, False otherwise.
-        """
         if type(data) != type(True):
             return False
         if self.exact is not None:
@@ -209,30 +161,11 @@ class Bool(object):
 
 
 class Dict(object):
-    """ Validates dictionaries """
     def __init__(self, validators={}, strict=True):
-        """
-        By default validates any dictionary.
-        - 'validators': validators is a dictionary
-                        where each key and value are
-                        validators themself.
-        - 'strict': bool, True by default. When True,
-                    strict validation is performed, i.e.
-                    data must have the same quantity of keys
-                    as 'validators' specified previously,
-                    plus only one validator is used per key.
-                    When False, louse validation is performed,
-                    i.e. one validator can validate as many keys
-                    as possible.
-        """
         self.validators = validators
         self.strict = strict
 
     def validate(self, data):
-        """
-        Validates data according to specified information on initializing this object.
-        Returns True if data is valid, False otherwise.
-        """
         if type(data) != type({}):
             return False
         used_validators = []
@@ -244,8 +177,17 @@ class Dict(object):
                     # we already used this validator, skip
                     if validator_key in used_validators:
                         continue
-                is_valid_key = validator_key.validate(data_key)
-                is_valid_value = validator_value.validate(data_value)
+                kind = kind_of(validator_key)
+                if kind == TYPE_VALIDATOR:
+                    is_valid_key = validator_key.validate(data_key)
+                else:
+                    is_valid_key = validator_key == data_key
+
+                kind = kind_of(validator_value)
+                if kind == TYPE_VALIDATOR:
+                    is_valid_value = validator_value.validate(data_value)
+                else:
+                    is_valid_value = validator_value == data_value
                 if is_valid_key and is_valid_value:
                     if self.strict:
                         used_validators.append(validator_key)
