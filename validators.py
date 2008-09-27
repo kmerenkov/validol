@@ -142,17 +142,20 @@ class List(object):
     def __init__(self, validators=[]):
         """
         By default validates any list at all.
-        - 'validators': list of validators to attempt
-                        validation of data.
-             If only one validator was specified, then
-           all list items supposed to be validated by
-           this validator.
+        - 'validators': validators to validate list items.
+             If validator is passed there - then all list items
+           are supposed to be validated by this validator
              If many validators were specified, then
            strict validation is performed, i.e.
            list must have strict length and strict order
            of elements.
         """
-        self.validators = validators
+        self.__one_validator = False
+        if getattr(validators, "validate", False):
+            self.__one_validator = True
+            self.validators = [validators]
+        else:
+            self.validators = validators
 
     def validate(self, data):
         """
@@ -161,12 +164,12 @@ class List(object):
         """
         if type(data) != type([]):
             return False
-        if len(self.validators) == 1:
+        if self.__one_validator:
             # validate all elements with only one validator
             for element in data:
                 if not self.validators[0].validate(element):
                     return False
-        elif len(self.validators) > 1:
+        elif not self.__one_validator and len(self.validators) > 0:
             # strict validation
             if len(self.validators) != len(data):
                 return False

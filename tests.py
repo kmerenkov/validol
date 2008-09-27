@@ -142,7 +142,7 @@ class ListTestCase(unittest.TestCase):
 
     def test_validators_good_001(self):
         """ must validate all elements with the same validator if only one validator is set """
-        x = v.List([v.Int(10)])
+        x = v.List(v.Int(10))
         self.assertTrue(x.validate([10,10,10]))
 
     def test_validators_good_002(self):
@@ -152,7 +152,7 @@ class ListTestCase(unittest.TestCase):
 
     def test_validators_bad_001(self):
         """ must invalidate list if contains wrong type, one validator is set """
-        x = v.List([v.Int(10)])
+        x = v.List(v.Int(10))
         self.assertFalse(x.validate([5,5,5]))
 
     def test_validators_bad_002(self):
@@ -252,12 +252,12 @@ class JobRelatedTestCase(unittest.TestCase):
     def test_good_001(self):
         reference_struct = v.Dict({
                 v.String(regex='\w+'):
-                    v.List([v.Dict({
+                    v.List(v.Dict({
                                 v.String("id"): v.Int(),
                                 v.String("is_full"): v.Bool(),
                                 v.String("shard_id"): v.Int(),
                                 v.String("url"): v.String()
-                                })])
+                                }))
                 }, strict=False)
         actual_struct = {
             'foo': [{'id': 0, 'is_full': False, 'shard_id': 0, 'url': 'foo'},
@@ -273,12 +273,12 @@ class JobRelatedTestCase(unittest.TestCase):
     def test_bad_001(self):
         reference_struct = v.Dict({
                 v.String(regex='\w+'):
-                    v.List([v.Dict({
+                    v.List(v.Dict({
                                 v.String("id"): v.Int(),
                                 v.String("is_full"): v.Bool(),
                                 v.String("shard_id"): v.Int(),
                                 v.String("url"): v.String()
-                                })])
+                                }))
                 }, strict=False)
         actual_struct = {
             'foo': [{'id': 0, 'is_full': False, 'shard_id': 0, 'url': 'foo'},
@@ -295,7 +295,7 @@ class SamplesTestCase(unittest.TestCase):
     def test_integer_list_001(self):
         """ test case for integer list sample #1 """
         l = [1,2,3,4,5,6]
-        ref_struct = v.List([v.Int()])
+        ref_struct = v.List(v.Int())
         self.assertTrue(ref_struct.validate(l))
         l.append('bad_end')
         self.assertFalse(ref_struct.validate(l))
@@ -315,12 +315,12 @@ class SamplesTestCase(unittest.TestCase):
     def test_integer_list_003(self):
         """ test case for integer list sample #3 """
         l = [10, "foo", 15," bar"]
-        ref_struct = v.List([
+        ref_struct = v.List(
                 v.Maybe([
                         v.Int(),
                         v.String()
                         ])
-                ])
+                )
         self.assertTrue(ref_struct.validate(l))
         l.append(True)
         self.assertFalse(ref_struct.validate(l))
