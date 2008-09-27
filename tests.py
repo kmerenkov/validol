@@ -293,12 +293,61 @@ class JobRelatedTestCase(unittest.TestCase):
 
 class SamplesTestCase(unittest.TestCase):
     def test_integer_list_001(self):
-        """ test case for sample #1 """
+        """ test case for integer list sample #1 """
         l = [1,2,3,4,5,6]
         ref_struct = v.List([v.Int()])
         self.assertTrue(ref_struct.validate(l))
         l.append('bad_end')
         self.assertFalse(ref_struct.validate(l))
+
+    def test_integer_list_002(self):
+        """ test case for integer list sample #2 """
+        l = [10, "foobar", True]
+        ref_struct = v.List([
+                v.Int(),
+                v.String(),
+                v.Bool()
+                ])
+        self.assertTrue(ref_struct.validate(l))
+        l.append('screw that list')
+        self.assertFalse(ref_struct.validate(l))
+
+    def test_integer_list_003(self):
+        """ test case for integer list sample #3 """
+        l = [10, "foo", 15," bar"]
+        ref_struct = v.List([
+                v.Maybe([
+                        v.Int(),
+                        v.String()
+                        ])
+                ])
+        self.assertTrue(ref_struct.validate(l))
+        l.append(True)
+        self.assertFalse(ref_struct.validate(l))
+
+    def test_dictionary_001(self):
+        """ test case for dictionary #1 """
+        d = {'firstName': 'John', 'lastName': 'Smith'}
+        ref_struct = v.Dict({
+                v.String('firstName'): v.String(),
+                v.String('lastName'):  v.String(),
+                })
+        self.assertTrue(ref_struct.validate(d))
+        d['foo'] = 10
+        self.assertFalse(ref_struct.validate(d))
+
+    def test_dictionary_002(self):
+        """ test case for dictionary #2 """
+        d = {'firstName': 'John', 'lastName': 'Smith'}
+        ref_struct = v.Dict({
+                v.String(regex='\w+'): v.String()
+                },
+                            strict=False)
+        self.assertTrue(ref_struct.validate(d))
+        d['anotherKey'] = 'look ma, still validates'
+        self.assertTrue(ref_struct.validate(d))
+        d['badKey'] = 10
+        self.assertFalse(ref_struct.validate(d))
 
 
 if __name__ == '__main__':
