@@ -1,0 +1,24 @@
+Copyright (c) 2008 by Konstantin Merenkov <kmerenkov@gmail.com>
+
+Requirements: Python (http://python.org/)
+
+==== About ====
+This is a small library which lets you validate structures, something like
+DTD for XML, except scturcture' scheme is valid python code and made of
+valid python objects.
+
+==== Why ====
+I needed something to perform validation of json objects we use in our
+project at work.
+
+==== License ====
+See LICENSE file, which in the same directory as this README
+
+==== Help? Documentation? ====
+At the moment of initial commit, there are 40 tests. The day you are reading
+this text maybe even more.
+You can get idea of how to use it from test cases.
+
+==== Other ====
+This library is probably far from being bug-free. It took me few hours to
+complete it.
