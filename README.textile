@@ -1,4 +1,4 @@
-Copyright (c) 2008 by Konstantin Merenkov <kmerenkov@gmail.com>
+Copyright (c) 2008 by Konstantin Merenkov &lt;kmerenkov@gmail.com&gt;
 
 Project's homepage: http://github.com/kmerenkov/struct_validator/tree/master
 
