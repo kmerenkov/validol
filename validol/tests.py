@@ -103,6 +103,10 @@ class DictTestCase(unittest.TestCase):
         x = {str: str}
         self.assertFalse(validate(x, {}))
 
+    def test_bad_006(self):
+        x = {"foo": int, "bar": int}
+        self.assertFalse(validate(x, {"bar": 10}))
+
 
 class JobRelatedTestCase(unittest.TestCase):
     """ production-use use-cases for me """

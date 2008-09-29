@@ -89,6 +89,8 @@ def validate_hash(validator, data):
     if validator != {} and data == {}:
         return False
     used_validators = []
+    valid_data_count = 0
+    used_many_validators = 0
     for data_key, data_value in data.iteritems():
         data_valid = False
         for validator_key, validator_value in validator.iteritems():
@@ -97,12 +99,17 @@ def validate_hash(validator, data):
             is_valid_key = validate_common(validator_key, data_key)
             is_valid_value = validate_common(validator_value, data_value)
             if is_valid_key and is_valid_value:
+                valid_data_count += 1
                 if not isinstance(validator_key, Many):
                     used_validators.append(validator_key)
+                else:
+                    used_many_validators += 1
                 data_valid = True
         if not data_valid:
             return False
-    return True
+    declared_many_validator_count = len(filter(lambda x: isinstance(x, Many), validator.keys()))
+    unused_notmany_validator_count = len(filter(lambda x: x not in used_validators, validator.keys()))
+    return unused_notmany_validator_count == declared_many_validator_count
 
 
 class AnyOf(object):
