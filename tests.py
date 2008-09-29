@@ -145,10 +145,30 @@ class ListTestCase(unittest.TestCase):
         x = v.List("foo")
         self.assertTrue(x.validate(["foo", "foo", "foo"]))
 
+    def test_good_004(self):
+        """ must validate regexes """
+        x = v.List(re.compile('\w+'))
+        self.assertTrue(x.validate(['foo', 'bar', 'zar']))
+
+    def test_good_005(self):
+        """ must validate by type """
+        x = v.List(int)
+        self.assertTrue(x.validate([1,2,3,4,5]))
+
     def test_bad_001(self):
         """ must invalidate non-empty lists """
         x = v.List("foo")
         self.assertFalse(x.validate(["foo", "bar"]))
+
+    def test_bad_002(self):
+        """ must invalidate regexes """
+        x = v.List(re.compile('foo'))
+        self.assertFalse(x.validate(['123', '456', '789']))
+
+    def test_bad_003(self):
+        """ must invalidate by type """
+        x = v.List(str)
+        self.assertFalse(x.validate([1,2,3,4,5]))
 
     def test_validators_good_001(self):
         """ must validate all elements with the same validator if only one validator is set """

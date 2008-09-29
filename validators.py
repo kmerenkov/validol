@@ -17,6 +17,8 @@ import re
 TYPE_OBJ = 0
 TYPE_VALIDATOR = 1
 TYPE_ITERABLE = 2
+TYPE_REGEX = 3
+TYPE_TYPE = 4
 
 
 
@@ -25,9 +27,31 @@ def kind_of(obj):
         return TYPE_VALIDATOR
     elif getattr(obj, "__iter__", False):
         return TYPE_ITERABLE
+    elif getattr(obj, "match", False) and getattr(obj, "search", False):
+        return TYPE_REGEX
+    elif obj in [str,int,bool,dict,float]:
+        return TYPE_TYPE
     else:
         return TYPE_OBJ
 
+def validate_common(validator, data):
+    kind = kind_of(validator)
+    print "VALIDATOR: %s" % validator
+    print "KIND: %d" % kind
+    print "DATA: %s" % data
+    if kind == TYPE_VALIDATOR:
+        if not validator.validate(data):
+            return False
+    elif kind == TYPE_REGEX:
+        if not validator.match(data):
+            return False
+    elif kind == TYPE_OBJ:
+        if data != validator:
+            return False
+    elif kind == TYPE_TYPE:
+        if not isinstance(data, validator):
+            return False
+    return True
 
 class Anything(object):
     def validate(self, data):
@@ -122,21 +146,16 @@ class List(object):
         if type(data) != type([]):
             return False
         kind = kind_of(self.validators)
-        if kind == TYPE_VALIDATOR:
-            # validate all elements with only one validator
-            for element in data:
-                if not self.validators.validate(element):
-                    return False
-        elif kind == TYPE_ITERABLE:
-            # strict validation
+        if kind == TYPE_ITERABLE:
             if len(self.validators) != len(data):
                 return False
             for element,validator in zip(data, self.validators):
-                if not validator.validate(element):
+                if not validate_common(validator, element):
                     return False
         else:
+            # validate all elements with only one validator
             for element in data:
-                if element != self.validators:
+                if not validate_common(self.validators, element):
                     return False
         # if we don't have any validators set, just check types
         return True
