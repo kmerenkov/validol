@@ -84,6 +84,9 @@ def validate_hash(validator, data):
         return False
     if validator == {}:
         return data == {}
+    else:
+        if data == {}:
+            return False
     used_validators = []
     for data_key, data_value in data.iteritems():
         data_valid = False
@@ -98,6 +101,7 @@ def validate_hash(validator, data):
                 data_valid = True
         if not data_valid:
             return False
+
     return True
 
 
@@ -122,3 +126,6 @@ class Many(object):
 
     def validate(self, data):
         return validate_common(self.data, data)
+
+    def __str__(self):
+        return "Many %s" % self.data
