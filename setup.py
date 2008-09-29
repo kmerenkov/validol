@@ -23,4 +23,5 @@ setup(name='validol',
       author='Konstantin Merenkov',
       author_email='kmerenkov@gmail.com',
       url='http://github.com/kmerenkov/struct_validator/tree/master',
-      py_modules=['__init__', 'tests'])
+      packages=['validol'])
+
