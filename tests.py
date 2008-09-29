@@ -87,13 +87,13 @@ class DictTestCase(unittest.TestCase):
 class JobRelatedTestCase(unittest.TestCase):
     """ production-use use-cases for me """
     def test_good_001(self):
-        reference_struct = {
+        scheme = {
             re.compile('\w+'): [{"id": int,
                                  "is_full": bool,
                                  "shard_id": int,
                                  "url": str}]
             }
-        actual_struct = {
+        data = {
             'foo': [{'id': 0, 'is_full': False, 'shard_id': 0, 'url': 'foo'},
                     {'id': 1, 'is_full': True, 'shard_id': 3, 'url': 'bar'},
                     {'id': 2, 'is_full': False, 'shard_id': 5, 'url': 'zar'},],
@@ -101,17 +101,17 @@ class JobRelatedTestCase(unittest.TestCase):
                     {'id': 4, 'is_full': True, 'shard_id': 9, 'url': 'barfoo'},
                     {'id': 5, 'is_full': False, 'shard_id': 11, 'url': 'zarbar'},]
             }
-        self.assertTrue(validate(reference_struct, actual_struct))
+        self.assertTrue(validate(scheme, data))
 
 
     def test_bad_001(self):
-        reference_struct = {
+        scheme = {
             re.compile('\w+'): [{"id": int,
                                  "is_full": bool,
                                  "shard_id": int,
                                  "url": str}]
             }
-        actual_struct = {
+        data = {
             'foo': [{'id': 0, 'is_full': False, 'shard_id': 0, 'url': 'foo'},
                     {'id': 1, 'is_full': True, 'shard_id': 3, 'url': 'bar'},
                     {'id': 2, 'is_full': False, 'shard_id': 5, 'url': 'zar'},],
@@ -119,46 +119,46 @@ class JobRelatedTestCase(unittest.TestCase):
                     {'id': 4, 'is_full': True, 'shard_id': 9, 'url': 'barfoo'},
                     {'id': 5, 'is_full': False, 'shard_id': 11, 'url': 10},]
             }
-        self.assertFalse(validate(reference_struct, actual_struct))
+        self.assertFalse(validate(scheme, data))
 
 
 class SamplesTestCase(unittest.TestCase):
     def test_integer_list_001(self):
         """ test case for integer list sample #1 """
         l = [1,2,3,4,5,6]
-        ref_struct = [int]
-        self.assertTrue(validate(ref_struct, l))
+        scheme = [int]
+        self.assertTrue(validate(scheme, l))
         l.append('bad_end')
-        self.assertFalse(validate(ref_struct, l))
+        self.assertFalse(validate(scheme, l))
 
     def test_integer_list_003(self):
         """ test case for integer list sample #3 """
         l = [10, "foo", 15," bar"]
-        ref_struct = [AnyOf([int, str])]
-        self.assertTrue(validate(ref_struct, l))
+        scheme = [AnyOf([int, str])]
+        self.assertTrue(validate(scheme, l))
         l.append(True)
-        self.assertFalse(validate(ref_struct, l))
+        self.assertFalse(validate(scheme, l))
 
     def test_dictionary_001(self):
         """ test case for dictionary #1 """
         d = {'firstName': 'John', 'lastName': 'Smith'}
-        ref_struct = {
+        scheme = {
             'firstName': str,
             'lastName':  str
             }
-        self.assertTrue(validate(ref_struct, d))
+        self.assertTrue(validate(scheme, d))
         d['foo'] = 10
-        self.assertFalse(validate(ref_struct, d))
+        self.assertFalse(validate(scheme, d))
 
     def test_dictionary_002(self):
         """ test case for dictionary #2 """
         d = {'firstName': 'John', 'lastName': 'Smith'}
-        ref_struct = {re.compile('\w+'): str}
-        self.assertTrue(validate(ref_struct, d))
+        scheme = {re.compile('\w+'): str}
+        self.assertTrue(validate(scheme, d))
         d['anotherKey'] = 'look ma, still validates'
-        self.assertTrue(validate(ref_struct, d))
+        self.assertTrue(validate(scheme, d))
         d['badKey'] = 10
-        self.assertFalse(validate(ref_struct, d))
+        self.assertFalse(validate(scheme, d))
 
 
 if __name__ == '__main__':
