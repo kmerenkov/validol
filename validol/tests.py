@@ -49,6 +49,14 @@ class ListTestCase(unittest.TestCase):
         x = []
         self.assertTrue(validate(x, []))
 
+    def test_good_004(self):
+        x = ()
+        self.assertTrue(validate(x, ()))
+
+    def test_good_005(self):
+        x = (int, str, bool)
+        self.assertTrue(validate(x, (10, "foo", True)))
+
     def test_bad_001(self):
         x = []
         self.assertFalse(validate(x, "foo"))
@@ -60,6 +68,19 @@ class ListTestCase(unittest.TestCase):
     def test_bad_003(self):
         x = []
         self.assertFalse(validate(x, [1,2,3]))
+
+    def test_bad_004(self):
+        x = ()
+        self.assertFalse(validate(x, (10)))
+
+    def test_bad_005(self):
+        x = (int, str, bool)
+        self.assertFalse(validate(x, ("foo", 10, False)))
+
+    def test_bad_006(self):
+        x = ()
+        self.assertFalse(validate(x, []))
+
 
 
 class DictTestCase(unittest.TestCase):

@@ -14,11 +14,12 @@
 
 TYPE_UNKNOWN = 0
 TYPE_VALIDATOR = 1
-TYPE_ITERABLE = 2
+TYPE_LIST = 2
 TYPE_REGEX = 3
 TYPE_TYPE = 4
 TYPE_DICTIONARY = 5
 TYPE_OBJECT = 6
+TYPE_TUPLE = 7
 
 
 def kind_of(obj):
@@ -26,8 +27,10 @@ def kind_of(obj):
         return TYPE_VALIDATOR
     elif isinstance(obj, dict):
         return TYPE_DICTIONARY
-    elif isinstance(obj, (tuple, list)):
-        return TYPE_ITERABLE
+    elif isinstance(obj, list):
+        return TYPE_LIST
+    elif isinstance(obj, tuple):
+        return TYPE_TUPLE
     elif getattr(obj, "match", False) and getattr(obj, "search", False):
         return TYPE_REGEX
     elif obj in [str,unicode,int,bool,dict,float]:
@@ -50,8 +53,10 @@ def validate_common(validator, data):
             return True
     elif kind == TYPE_DICTIONARY:
         return validate_hash(validator, data)
-    elif kind == TYPE_ITERABLE:
+    elif kind == TYPE_LIST:
         return validate_list(validator, data)
+    elif kind == TYPE_TUPLE:
+        return validate_tuple(validator, data)
     elif kind == TYPE_UNKNOWN:
         if data == validator:
             return True
@@ -66,8 +71,19 @@ def validate_common(validator, data):
             return True
     return False
 
+
+def validate_tuple(validator, data):
+    if not isinstance(data, tuple):
+        return False
+    if len(validator) != len(data):
+        return False
+    for v,d in zip(validator, data):
+        if not validate_common(v, d):
+            return False
+    return True
+
 def validate_list(validator, data):
-    if not isinstance(data, (tuple, list)):
+    if not isinstance(data, list):
         return False
     if len(validator) == 0:
         return len(data) == 0
