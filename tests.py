@@ -19,113 +19,20 @@ import re
 import validators as v
 
 
-class IntTestCase(unittest.TestCase):
-    def test_good_001(self):
-        """ must validate integers """
-        x = v.Int()
-        self.assertTrue(x.validate(10))
-
-    def test_range_good_001(self):
-        """ must validate integers within specified range """
-        x = v.Int(range=(0, 10))
-        self.assertTrue(x.validate(5))
-
-    def test_range_good_002(self):
-        """ must validate integers within specified range when only max bound is set """
-        x = v.Int(range=(None,15))
-        self.assertTrue(x.validate(5))
-
-    def test_range_good_003(self):
-        """ must validate integers within specified range when only min bound is set """
-        x = v.Int(range=(5,None))
-        self.assertTrue(x.validate(10))
-
-    def test_range_good_004(self):
-        """ must validate any int if min and max bounds of range are None """
-        x = v.Int(range=(None,None))
-        self.assertTrue(x.validate(10))
-
-    def test_exact_good_001(self):
-        """ must validate integer equal to 'exact' argument value """
-        x = v.Int(exact=10)
-        self.assertTrue(x.validate(10))
-
-    def test_bad_001(self):
-        """ must invalidate non-integers """
-        x = v.Int()
-        self.assertFalse(x.validate("foo"))
-
-    def test_range_bad_001(self):
-        """ must invalidate integers outside specified range """
-        x = v.Int(range=(0, 10))
-        self.assertFalse(x.validate(15))
-
-    def test_range_bad_002(self):
-        """ must invalidate int ouside range when only max bound is set """
-        x = v.Int(range=(None,10))
-        self.assertFalse(x.validate(15))
-
-    def test_range_bad_003(self):
-        """ must invalidate int outside range when only min bound is set """
-        x = v.Int(range=(5,None))
-        self.assertFalse(x.validate(1))
-
-    def test_range_bad_004(self):
-        """ must throw attribute error when max < min """
-        self.assertRaises(AttributeError, lambda: v.Int(range=(15,10)))
-
-    def test_exact_bad_001(self):
-        """ must invalidate integers != to 'exact' argument value """
-        x = v.Int(exact=10)
-        self.assertFalse(x.validate(15))
-
-
-class StringTestCase(unittest.TestCase):
-    def test_good_001(self):
-        """ must validate string """
-        x = v.String()
-        self.assertTrue(x.validate(""))
-
-    def test_exact_good_001(self):
-        """ must validate exact string """
-        x = v.String("foo")
-        self.assertTrue(x.validate("foo"))
-
-    def test_re_good_001(self):
-        """ must validate str regex """
-        x = v.String(regex=".+foo.+")
-        self.assertTrue(x.validate("barfoobar"))
-
-    def test_re_good_002(self):
-        """ must validate re regex """
-        x = v.String(regex=re.compile(".+foo.+"))
-        self.assertTrue(x.validate("barfoobar"))
-
-    def test_exact_bad_002(self):
-        """ must invalidate exact string """
-        x = v.String("foo")
-        self.assertFalse(x.validate("bar"))
-
-    def test_re_bad_001(self):
-        """ must invalidate regex """
-        x = v.String(regex=".+foo.+")
-        self.assertFalse(x.validate("foo"))
-
-
 class MaybeTestCase(unittest.TestCase):
     def test_good_001(self):
         """ must validate one type """
-        x = v.Maybe([v.Int()])
+        x = v.Maybe([int])
         self.assertTrue(x.validate(10))
 
     def test_good_002(self):
         """ must validate few types """
-        x = v.Maybe([v.Int(10), v.String("bar")])
+        x = v.Maybe([10, "bar"])
         self.assertTrue(x.validate("bar"))
 
     def test_bad_001(self):
         """ must invalidate wrong types """
-        x = v.Maybe([v.Int()])
+        x = v.Maybe([int])
         self.assertFalse(x.validate("foo"))
 
 
@@ -172,50 +79,23 @@ class ListTestCase(unittest.TestCase):
 
     def test_validators_good_001(self):
         """ must validate all elements with the same validator if only one validator is set """
-        x = v.List(v.Int(10))
+        x = v.List(10)
         self.assertTrue(x.validate([10,10,10]))
 
     def test_validators_good_002(self):
         """ must validate all elements with according validators if few validators were set """
-        x = v.List([v.Int(10), v.String("foo")])
+        x = v.List([10, "foo"])
         self.assertTrue(x.validate([10, "foo"]))
 
     def test_validators_bad_001(self):
         """ must invalidate list if contains wrong type, one validator is set """
-        x = v.List(v.Int(10))
+        x = v.List(10)
         self.assertFalse(x.validate([5,5,5]))
 
     def test_validators_bad_002(self):
         """ must invalidate list by length when few validators were set """
-        x = v.List([v.Int(10), v.String("foo")])
+        x = v.List([10, "foo"])
         self.assertFalse(x.validate([10, "foo", 15]))
-
-
-class BoolTestCase(unittest.TestCase):
-    def test_good_001(self):
-        """ must validate True """
-        x = v.Bool()
-        self.assertTrue(x.validate(True))
-
-    def test_good_002(self):
-        """ must validate False """
-        x = v.Bool()
-        self.assertTrue(x.validate(False))
-
-    def test_bad_001(self):
-        """ must invalidate non-bools """
-        x = v.Bool()
-        self.assertFalse(x.validate("foo"))
-
-    def test_exact_good_001(self):
-        """ must validate exact True """
-        x = v.Bool(True)
-        self.assertTrue(x.validate(True))
-
-    def test_exact_good_002(self):
-        """ must validate False """
-        x = v.Bool(False)
-        self.assertTrue(x.validate(False))
 
 
 class DictTestCase(unittest.TestCase):
@@ -228,7 +108,7 @@ class DictTestCase(unittest.TestCase):
         """ must validate by key and value """
         x = v.Dict(
             {
-                v.String("key1"): v.Int(10),
+                "key1": 10,
              }
             )
         self.assertTrue(x.validate({'key1': 10}))
@@ -237,9 +117,9 @@ class DictTestCase(unittest.TestCase):
         """ must validate by few keys and values """
         x = v.Dict(
             {
-                v.String("key1"): v.Int(10),
-                v.String("key2"): v.Int(15),
-                v.String("key0"): v.Int(0),
+                "key1": 10,
+                "key2": 15,
+                "key0": 0,
              }
             )
         self.assertTrue(x.validate({
@@ -251,8 +131,8 @@ class DictTestCase(unittest.TestCase):
     def test_good_004(self):
         """ must validate by few keys and values """
         x = v.Dict({
-                "firstName": v.String(),
-                "lastName": v.String(),
+                "firstName": str,
+                "lastName": str,
                 })
         self.assertTrue(x.validate({
                     "lastName": "Smith",
@@ -268,7 +148,7 @@ class DictTestCase(unittest.TestCase):
         """ must invalidate by key and value """
         x = v.Dict(
             {
-                v.String("key1"): v.Int(10),
+                "key1": 10,
              }
             )
         self.assertFalse(x.validate({'key0': 5}))
@@ -277,9 +157,9 @@ class DictTestCase(unittest.TestCase):
         """ must invalidate by few keys and values """
         x = v.Dict(
             {
-                v.String("key1"): v.Int(10),
-                v.String("key2"): v.Int(15),
-                v.String("key0"): v.Int(0),
+                "key1": 10,
+                "key2": 15,
+                "key0": 0,
              }
             )
         self.assertFalse(x.validate({
@@ -290,8 +170,8 @@ class DictTestCase(unittest.TestCase):
     def test_bad_004(self):
         """ must invalidate by few keys and values """
         x = v.Dict({
-                "firstName": v.String(),
-                "lastName": v.String(),
+                "firstName": str,
+                "lastName": str,
                 })
         self.assertFalse(x.validate({
                     "foo": "Smith",
@@ -303,12 +183,12 @@ class JobRelatedTestCase(unittest.TestCase):
     """ production-use use-cases for me """
     def test_good_001(self):
         reference_struct = v.Dict({
-                v.String(regex='\w+'):
+                re.compile('\w+'):
                     v.List(v.Dict({
-                                v.String("id"): v.Int(),
-                                v.String("is_full"): v.Bool(),
-                                v.String("shard_id"): v.Int(),
-                                v.String("url"): v.String()
+                                "id": int,
+                                "is_full": bool,
+                                "shard_id": int,
+                                "url": str
                                 }))
                 }, strict=False)
         actual_struct = {
@@ -324,12 +204,12 @@ class JobRelatedTestCase(unittest.TestCase):
 
     def test_bad_001(self):
         reference_struct = v.Dict({
-                v.String(regex='\w+'):
+                re.compile('\w+'):
                     v.List(v.Dict({
-                                v.String("id"): v.Int(),
-                                v.String("is_full"): v.Bool(),
-                                v.String("shard_id"): v.Int(),
-                                v.String("url"): v.String()
+                                "id": int,
+                                "is_full": bool,
+                                "shard_id": int,
+                                "url": str
                                 }))
                 }, strict=False)
         actual_struct = {
@@ -347,7 +227,7 @@ class SamplesTestCase(unittest.TestCase):
     def test_integer_list_001(self):
         """ test case for integer list sample #1 """
         l = [1,2,3,4,5,6]
-        ref_struct = v.List(v.Int())
+        ref_struct = v.List(int)
         self.assertTrue(ref_struct.validate(l))
         l.append('bad_end')
         self.assertFalse(ref_struct.validate(l))

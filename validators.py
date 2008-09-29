@@ -58,68 +58,6 @@ class Anything(object):
     def validate(self, data):
         return True
 
-
-class Int(object):
-    def __init__(self, exact=None, range=None):
-        # validate range
-        if range is not None:
-            rmin,rmax = range
-            if rmin is not None and rmax is not None:
-                if range[1] < range[0]:
-                    raise AttributeError("You cannot specify range where max is less than min bound")
-        self.range = range
-        self.exact = exact
-
-    def __check_range(self, range, data):
-        if range is not None:
-            rmin, rmax = range
-            if rmin is not None:
-                if rmin > data:
-                    return False
-            if rmax is not None:
-                if rmax < data:
-                    return False
-        return True
-
-    def validate(self, data):
-        if type(data) != type(0):
-            return False
-        if self.exact is not None:
-            if data != self.exact:
-                return False
-        else:
-            if not self.__check_range(self.range, data):
-                return False
-        return True
-
-    def __str__(self):
-        return "Int: exact: %s, range: %s" % (str(self.exact), str(self.range))
-
-
-class String(object):
-    def __init__(self, exact=None, regex=None):
-        if regex is not None and type(regex) == type(""):
-            regex = re.compile(regex)
-        self.regex = regex
-        self.exact = exact
-
-    def validate(self, data):
-        if type(data) != type(""):
-            return False
-        if self.exact is not None:
-            if data != self.exact:
-                return False
-        else:
-            if self.regex is not None:
-                m = self.regex.match(data)
-                if not m:
-                    return False
-        return True
-
-    def __str__(self):
-        return "String: exact: \"%s\", regex: %s" % (str(self.exact), str(self.regex))
-
-
 class Maybe(object):
     def __init__(self, validators=[]):
         self.validators = validators
@@ -159,22 +97,6 @@ class List(object):
 
     def __str__(self):
         return "List: validators: %s" % str(self.validators)
-
-
-class Bool(object):
-    def __init__(self, exact=None):
-        self.exact = exact
-
-    def validate(self, data):
-        if type(data) != type(True):
-            return False
-        if self.exact is not None:
-            return self.exact == data
-        return True
-
-    def __str__(self):
-        return "Bool: exact: %s" % str(self.exact)
-
 
 class Dict(object):
     def __init__(self, validators={}, strict=True):
