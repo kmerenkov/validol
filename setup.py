@@ -22,6 +22,6 @@ setup(name='validol',
       description='Python basic structure validator',
       author='Konstantin Merenkov',
       author_email='kmerenkov@gmail.com',
-      url='http://github.com/kmerenkov/struct_validator/tree/master',
+      url='http://github.com/kmerenkov/validol/tree/master',
       packages=['validol'])
 
