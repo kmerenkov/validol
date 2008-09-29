@@ -36,22 +36,19 @@ def kind_of(obj):
 
 def validate_common(validator, data):
     kind = kind_of(validator)
-    print "VALIDATOR: %s" % validator
-    print "KIND: %d" % kind
-    print "DATA: %s" % data
     if kind == TYPE_VALIDATOR:
-        if not validator.validate(data):
-            return False
+        if validator.validate(data):
+            return True
     elif kind == TYPE_REGEX:
-        if not validator.match(data):
-            return False
+        if validator.match(data):
+            return True
     elif kind == TYPE_OBJ:
-        if data != validator:
-            return False
+        if data == validator:
+            return True
     elif kind == TYPE_TYPE:
-        if not isinstance(data, validator):
-            return False
-    return True
+        if type(data) == validator:
+            return True
+    return False
 
 class Anything(object):
     def validate(self, data):
@@ -125,13 +122,9 @@ class Maybe(object):
 
     def validate(self, data):
         for validator in self.validators:
-            kind = kind_of(validator)
-            if kind == TYPE_VALIDATOR:
-                if validator.validate(data):
-                    return True
-            elif kind == TYPE_OBJ:
-                if validator == data:
-                    return True
+            ret = validate_common(validator, data)
+            if ret:
+                return True
         return False
 
     def __str__(self):
@@ -143,7 +136,7 @@ class List(object):
         self.validators = validators
 
     def validate(self, data):
-        if type(data) != type([]):
+        if not isinstance(data, (list, tuple)):
             return False
         kind = kind_of(self.validators)
         if kind == TYPE_ITERABLE:
