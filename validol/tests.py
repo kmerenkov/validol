@@ -79,6 +79,10 @@ class DictTestCase(unittest.TestCase):
         x = {Many(re.compile('\d+')): str}
         self.assertTrue(validate(x, {'10': 'foo', '20': 'bar'}))
 
+    def test_good_005(self):
+        x = {}
+        self.assertTrue(validate(x, {}))
+
     def test_bad_001(self):
         x = {}
         self.assertFalse(validate(x, []))
@@ -90,6 +94,14 @@ class DictTestCase(unittest.TestCase):
     def test_bad_003(self):
         x = {re.compile('\d+'): str}
         self.assertFalse(validate(x, {'foo': 'bar'}))
+
+    def test_bad_004(self):
+        x = {}
+        self.assertFalse(validate(x, {'a':'b'}))
+
+    def test_bad_005(self):
+        x = {str: str}
+        self.assertFalse(validate(x, {}))
 
 
 class JobRelatedTestCase(unittest.TestCase):
