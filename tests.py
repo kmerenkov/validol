@@ -355,11 +355,7 @@ class SamplesTestCase(unittest.TestCase):
     def test_integer_list_002(self):
         """ test case for integer list sample #2 """
         l = [10, "foobar", True]
-        ref_struct = v.List([
-                v.Int(),
-                v.String(),
-                v.Bool()
-                ])
+        ref_struct = v.List([int, str, bool])
         self.assertTrue(ref_struct.validate(l))
         l.append('screw that list')
         self.assertFalse(ref_struct.validate(l))
@@ -368,10 +364,7 @@ class SamplesTestCase(unittest.TestCase):
         """ test case for integer list sample #3 """
         l = [10, "foo", 15," bar"]
         ref_struct = v.List(
-                v.Maybe([
-                        v.Int(),
-                        v.String()
-                        ])
+                v.Maybe([int, str])
                 )
         self.assertTrue(ref_struct.validate(l))
         l.append(True)
@@ -381,8 +374,8 @@ class SamplesTestCase(unittest.TestCase):
         """ test case for dictionary #1 """
         d = {'firstName': 'John', 'lastName': 'Smith'}
         ref_struct = v.Dict({
-                v.String('firstName'): v.String(),
-                v.String('lastName'):  v.String(),
+                'firstName': str,
+                'lastName':  str,
                 })
         self.assertTrue(ref_struct.validate(d))
         d['foo'] = 10
@@ -392,7 +385,7 @@ class SamplesTestCase(unittest.TestCase):
         """ test case for dictionary #2 """
         d = {'firstName': 'John', 'lastName': 'Smith'}
         ref_struct = v.Dict({
-                v.String(regex='\w+'): v.String()
+                re.compile('\w+'): str
                 },
                             strict=False)
         self.assertTrue(ref_struct.validate(d))

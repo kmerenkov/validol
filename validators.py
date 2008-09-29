@@ -196,17 +196,8 @@ class Dict(object):
                     # we already used this validator, skip
                     if validator_key in used_validators:
                         continue
-                kind = kind_of(validator_key)
-                if kind == TYPE_VALIDATOR:
-                    is_valid_key = validator_key.validate(data_key)
-                else:
-                    is_valid_key = validator_key == data_key
-
-                kind = kind_of(validator_value)
-                if kind == TYPE_VALIDATOR:
-                    is_valid_value = validator_value.validate(data_value)
-                else:
-                    is_valid_value = validator_value == data_value
+                is_valid_key = validate_common(validator_key, data_key)
+                is_valid_value = validate_common(validator_value, data_value)
                 if is_valid_key and is_valid_value:
                     if self.strict:
                         used_validators.append(validator_key)
