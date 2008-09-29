@@ -72,13 +72,6 @@ def validate_list(validator, data):
     return True
 
 def validate_hash(validator, data):
-    def is_regex(obj):
-        kind = kind_of(obj)
-        if kind == TYPE_REGEX:
-            return True
-        else:
-            return False
-
     if not isinstance(data, dict):
         return False
     if validator == {}:
@@ -92,7 +85,7 @@ def validate_hash(validator, data):
             is_valid_key = validate_common(validator_key, data_key)
             is_valid_value = validate_common(validator_value, data_value)
             if is_valid_key and is_valid_value:
-                if not is_regex(validator_key):
+                if not isinstance(validator_key, Many):
                     used_validators.append(validator_key)
                 data_valid = True
         if not data_valid:
@@ -113,3 +106,11 @@ class AnyOf(object):
 
     def __str__(self):
         return "AnyOf: validators: %s" % str(self.validators)
+
+
+class Many(object):
+    def __init__(self, data):
+        self.data = data
+
+    def validate(self, data):
+        return validate_common(self.data, data)

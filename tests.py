@@ -16,7 +16,7 @@
 
 import unittest
 import re
-from validators import validate, AnyOf
+from validators import validate, AnyOf, Many
 
 
 class AnyOfTestCase(unittest.TestCase):
@@ -68,7 +68,7 @@ class DictTestCase(unittest.TestCase):
         self.assertTrue(validate(x, {'10': 'bar'}))
 
     def test_good_004(self):
-        x = {re.compile('\d+'): str}
+        x = {Many(re.compile('\d+')): str}
         self.assertTrue(validate(x, {'10': 'foo', '20': 'bar'}))
 
     def test_bad_001(self):
@@ -88,10 +88,10 @@ class JobRelatedTestCase(unittest.TestCase):
     """ production-use use-cases for me """
     def test_good_001(self):
         scheme = {
-            re.compile('\w+'): [{"id": int,
-                                 "is_full": bool,
-                                 "shard_id": int,
-                                 "url": str}]
+            Many(re.compile('\w+')): [{"id": int,
+                                       "is_full": bool,
+                                       "shard_id": int,
+                                       "url": str}]
             }
         data = {
             'foo': [{'id': 0, 'is_full': False, 'shard_id': 0, 'url': 'foo'},
@@ -106,10 +106,10 @@ class JobRelatedTestCase(unittest.TestCase):
 
     def test_bad_001(self):
         scheme = {
-            re.compile('\w+'): [{"id": int,
-                                 "is_full": bool,
-                                 "shard_id": int,
-                                 "url": str}]
+            Many(re.compile('\w+')): [{"id": int,
+                                       "is_full": bool,
+                                       "shard_id": int,
+                                       "url": str}]
             }
         data = {
             'foo': [{'id': 0, 'is_full': False, 'shard_id': 0, 'url': 'foo'},
@@ -153,7 +153,9 @@ class SamplesTestCase(unittest.TestCase):
     def test_dictionary_002(self):
         """ test case for dictionary #2 """
         d = {'firstName': 'John', 'lastName': 'Smith'}
-        scheme = {re.compile('\w+'): str}
+        scheme = {
+            Many(re.compile('\w+')): str
+            }
         self.assertTrue(validate(scheme, d))
         d['anotherKey'] = 'look ma, still validates'
         self.assertTrue(validate(scheme, d))
