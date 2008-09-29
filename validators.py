@@ -54,9 +54,11 @@ def validate_common(validator, data):
             return True
     return False
 
+
 class Anything(object):
     def validate(self, data):
         return True
+
 
 class Maybe(object):
     def __init__(self, validators=[]):
