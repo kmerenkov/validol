@@ -16,7 +16,7 @@
 
 import unittest
 import re
-from validators import validate, AnyOf, Many
+from __init__ import validate, AnyOf, Many
 
 
 class AnyOfTestCase(unittest.TestCase):
