@@ -12,12 +12,13 @@
 #  0. You just DO WHAT THE FUCK YOU WANT TO.
 
 
-TYPE_OBJ = 0
+TYPE_UNKNOWN = 0
 TYPE_VALIDATOR = 1
 TYPE_ITERABLE = 2
 TYPE_REGEX = 3
 TYPE_TYPE = 4
 TYPE_DICTIONARY = 5
+TYPE_OBJECT = 6
 
 
 def kind_of(obj):
@@ -31,8 +32,10 @@ def kind_of(obj):
         return TYPE_REGEX
     elif obj in [str,unicode,int,bool,dict,float]:
         return TYPE_TYPE
+    elif obj == object:
+        return TYPE_OBJECT
     else:
-        return TYPE_OBJ
+        return TYPE_UNKNOWN
 
 def validate(scheme, data):
     return validate_common(scheme, data)
@@ -49,9 +52,11 @@ def validate_common(validator, data):
         return validate_hash(validator, data)
     elif kind == TYPE_ITERABLE:
         return validate_list(validator, data)
-    elif kind == TYPE_OBJ:
+    elif kind == TYPE_UNKNOWN:
         if data == validator:
             return True
+    elif kind == TYPE_OBJECT:
+        return True
     elif kind == TYPE_TYPE:
         # workaround for bool, because bool is a subclass of int
         if type(data) == bool:
@@ -62,19 +67,22 @@ def validate_common(validator, data):
     return False
 
 def validate_list(validator, data):
+    if not isinstance(data, (tuple, list)):
+        return False
     if len(validator) == 0:
-        if not isinstance(data, (tuple, list)):
-            return False
+        return len(data) == 0
     if len(validator) == 1:
         for item in data:
             if not validate_common(validator[0], item):
                 return False
+    elif len(validator) > 1:
+        raise NotImplementedError, "You cannot specify more than one validator for list at the moment."
     return True
 
 def validate_hash(validator, data):
     if not isinstance(data, dict):
         return False
-    if validator == {}:
+    if validator == {} and data == {}:
         return True
     used_validators = []
     for data_key, data_value in data.iteritems():
