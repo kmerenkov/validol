@@ -29,7 +29,7 @@ def kind_of(obj):
         return TYPE_ITERABLE
     elif getattr(obj, "match", False) and getattr(obj, "search", False):
         return TYPE_REGEX
-    elif obj in [str,int,bool,dict,float]:
+    elif obj in [str,unicode,int,bool,dict,float]:
         return TYPE_TYPE
     else:
         return TYPE_OBJ
@@ -46,7 +46,11 @@ def validate_common(validator, data):
         if data == validator:
             return True
     elif kind == TYPE_TYPE:
-        if type(data) == validator:
+        # workaround for bool, because bool is a subclass of int
+        if type(data) == bool:
+            if type(data) == validator:
+                return True
+        elif isinstance(data, validator):
             return True
     return False
 
