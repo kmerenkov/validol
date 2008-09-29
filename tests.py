@@ -16,181 +16,83 @@
 
 import unittest
 import re
-import validators as v
+from validators import validate, AnyOf
 
 
-class MaybeTestCase(unittest.TestCase):
+class AnyOfTestCase(unittest.TestCase):
     def test_good_001(self):
         """ must validate one type """
-        x = v.Maybe([int])
+        x = AnyOf([int])
         self.assertTrue(x.validate(10))
 
     def test_good_002(self):
         """ must validate few types """
-        x = v.Maybe([10, "bar"])
+        x = AnyOf([10, "bar"])
         self.assertTrue(x.validate("bar"))
 
     def test_bad_001(self):
         """ must invalidate wrong types """
-        x = v.Maybe([int])
+        x = AnyOf([int])
         self.assertFalse(x.validate("foo"))
 
 
 class ListTestCase(unittest.TestCase):
     def test_good_001(self):
-        """ must validate empty lists """
-        x = v.List()
-        self.assertTrue(x.validate([]))
+        x = []
+        self.assertTrue(validate(x, [1,2,3,4]))
 
     def test_good_002(self):
-        """ must validate non-empty lists """
-        x = v.List()
-        self.assertTrue(x.validate([1,2,3]))
-
-    def test_good_003(self):
-        """ must validate non-empty lists """
-        x = v.List("foo")
-        self.assertTrue(x.validate(["foo", "foo", "foo"]))
-
-    def test_good_004(self):
-        """ must validate regexes """
-        x = v.List(re.compile('\w+'))
-        self.assertTrue(x.validate(['foo', 'bar', 'zar']))
-
-    def test_good_005(self):
-        """ must validate by type """
-        x = v.List(int)
-        self.assertTrue(x.validate([1,2,3,4,5]))
+        x = [int]
+        self.assertTrue(validate(x, [1,2,3,4]))
 
     def test_bad_001(self):
-        """ must invalidate non-empty lists """
-        x = v.List("foo")
-        self.assertFalse(x.validate(["foo", "bar"]))
+        x = []
+        self.assertFalse(validate(x, "foo"))
 
     def test_bad_002(self):
-        """ must invalidate regexes """
-        x = v.List(re.compile('foo'))
-        self.assertFalse(x.validate(['123', '456', '789']))
-
-    def test_bad_003(self):
-        """ must invalidate by type """
-        x = v.List(str)
-        self.assertFalse(x.validate([1,2,3,4,5]))
-
-    def test_validators_good_001(self):
-        """ must validate all elements with the same validator if only one validator is set """
-        x = v.List(10)
-        self.assertTrue(x.validate([10,10,10]))
-
-    def test_validators_good_002(self):
-        """ must validate all elements with according validators if few validators were set """
-        x = v.List([10, "foo"])
-        self.assertTrue(x.validate([10, "foo"]))
-
-    def test_validators_bad_001(self):
-        """ must invalidate list if contains wrong type, one validator is set """
-        x = v.List(10)
-        self.assertFalse(x.validate([5,5,5]))
-
-    def test_validators_bad_002(self):
-        """ must invalidate list by length when few validators were set """
-        x = v.List([10, "foo"])
-        self.assertFalse(x.validate([10, "foo", 15]))
+        x = [int]
+        self.assertFalse(validate(x, ["foo", "bar"]))
 
 
 class DictTestCase(unittest.TestCase):
     def test_good_001(self):
-        """ must validate dictionaries """
-        x = v.Dict()
-        self.assertTrue(x.validate({}))
+        x = {}
+        self.assertTrue(validate(x, {'foo': 'bar'}))
 
     def test_good_002(self):
-        """ must validate by key and value """
-        x = v.Dict(
-            {
-                "key1": 10,
-             }
-            )
-        self.assertTrue(x.validate({'key1': 10}))
+        x = {str: int}
+        self.assertTrue(validate(x, {'foo': 10}))
 
     def test_good_003(self):
-        """ must validate by few keys and values """
-        x = v.Dict(
-            {
-                "key1": 10,
-                "key2": 15,
-                "key0": 0,
-             }
-            )
-        self.assertTrue(x.validate({
-                    'key0': 0,
-                    'key1': 10,
-                    'key2': 15,
-                    }))
+        x = {re.compile('\d+'): str}
+        self.assertTrue(validate(x, {'10': 'bar'}))
 
     def test_good_004(self):
-        """ must validate by few keys and values """
-        x = v.Dict({
-                "firstName": str,
-                "lastName": str,
-                })
-        self.assertTrue(x.validate({
-                    "lastName": "Smith",
-                    "firstName": "John",
-                    }))
+        x = {re.compile('\d+'): str}
+        self.assertTrue(validate(x, {'10': 'foo', '20': 'bar'}))
 
     def test_bad_001(self):
-        """ must invalidate non-hashes """
-        x = v.Dict()
-        self.assertFalse(x.validate("foo"))
+        x = {}
+        self.assertFalse(validate(x, []))
 
     def test_bad_002(self):
-        """ must invalidate by key and value """
-        x = v.Dict(
-            {
-                "key1": 10,
-             }
-            )
-        self.assertFalse(x.validate({'key0': 5}))
+        x = {str: int}
+        self.assertFalse(validate(x, {'foo': 'bar'}))
 
     def test_bad_003(self):
-        """ must invalidate by few keys and values """
-        x = v.Dict(
-            {
-                "key1": 10,
-                "key2": 15,
-                "key0": 0,
-             }
-            )
-        self.assertFalse(x.validate({
-                    'key0': 0,
-                    'key1': 10,
-                    }))
-
-    def test_bad_004(self):
-        """ must invalidate by few keys and values """
-        x = v.Dict({
-                "firstName": str,
-                "lastName": str,
-                })
-        self.assertFalse(x.validate({
-                    "foo": "Smith",
-                    "bar": "John",
-                    }))
+        x = {re.compile('\d+'): str}
+        self.assertFalse(validate(x, {'foo': 'bar'}))
 
 
 class JobRelatedTestCase(unittest.TestCase):
     """ production-use use-cases for me """
     def test_good_001(self):
-        reference_struct = v.Dict({
-                re.compile('\w+'):
-                    v.List(v.Dict({
-                                "id": int,
-                                "is_full": bool,
-                                "shard_id": int,
-                                "url": str
-                                }))
-                }, strict=False)
+        reference_struct = {
+            re.compile('\w+'): [{"id": int,
+                                 "is_full": bool,
+                                 "shard_id": int,
+                                 "url": str}]
+            }
         actual_struct = {
             'foo': [{'id': 0, 'is_full': False, 'shard_id': 0, 'url': 'foo'},
                     {'id': 1, 'is_full': True, 'shard_id': 3, 'url': 'bar'},
@@ -199,19 +101,16 @@ class JobRelatedTestCase(unittest.TestCase):
                     {'id': 4, 'is_full': True, 'shard_id': 9, 'url': 'barfoo'},
                     {'id': 5, 'is_full': False, 'shard_id': 11, 'url': 'zarbar'},]
             }
-        self.assertTrue(reference_struct.validate(actual_struct))
+        self.assertTrue(validate(reference_struct, actual_struct))
 
 
     def test_bad_001(self):
-        reference_struct = v.Dict({
-                re.compile('\w+'):
-                    v.List(v.Dict({
-                                "id": int,
-                                "is_full": bool,
-                                "shard_id": int,
-                                "url": str
-                                }))
-                }, strict=False)
+        reference_struct = {
+            re.compile('\w+'): [{"id": int,
+                                 "is_full": bool,
+                                 "shard_id": int,
+                                 "url": str}]
+            }
         actual_struct = {
             'foo': [{'id': 0, 'is_full': False, 'shard_id': 0, 'url': 'foo'},
                     {'id': 1, 'is_full': True, 'shard_id': 3, 'url': 'bar'},
@@ -220,59 +119,46 @@ class JobRelatedTestCase(unittest.TestCase):
                     {'id': 4, 'is_full': True, 'shard_id': 9, 'url': 'barfoo'},
                     {'id': 5, 'is_full': False, 'shard_id': 11, 'url': 10},]
             }
-        self.assertFalse(reference_struct.validate(actual_struct))
+        self.assertFalse(validate(reference_struct, actual_struct))
 
 
 class SamplesTestCase(unittest.TestCase):
     def test_integer_list_001(self):
         """ test case for integer list sample #1 """
         l = [1,2,3,4,5,6]
-        ref_struct = v.List(int)
-        self.assertTrue(ref_struct.validate(l))
+        ref_struct = [int]
+        self.assertTrue(validate(ref_struct, l))
         l.append('bad_end')
-        self.assertFalse(ref_struct.validate(l))
-
-    def test_integer_list_002(self):
-        """ test case for integer list sample #2 """
-        l = [10, "foobar", True]
-        ref_struct = v.List([int, str, bool])
-        self.assertTrue(ref_struct.validate(l))
-        l.append('screw that list')
-        self.assertFalse(ref_struct.validate(l))
+        self.assertFalse(validate(ref_struct, l))
 
     def test_integer_list_003(self):
         """ test case for integer list sample #3 """
         l = [10, "foo", 15," bar"]
-        ref_struct = v.List(
-                v.Maybe([int, str])
-                )
-        self.assertTrue(ref_struct.validate(l))
+        ref_struct = [AnyOf([int, str])]
+        self.assertTrue(validate(ref_struct, l))
         l.append(True)
-        self.assertFalse(ref_struct.validate(l))
+        self.assertFalse(validate(ref_struct, l))
 
     def test_dictionary_001(self):
         """ test case for dictionary #1 """
         d = {'firstName': 'John', 'lastName': 'Smith'}
-        ref_struct = v.Dict({
-                'firstName': str,
-                'lastName':  str,
-                })
-        self.assertTrue(ref_struct.validate(d))
+        ref_struct = {
+            'firstName': str,
+            'lastName':  str
+            }
+        self.assertTrue(validate(ref_struct, d))
         d['foo'] = 10
-        self.assertFalse(ref_struct.validate(d))
+        self.assertFalse(validate(ref_struct, d))
 
     def test_dictionary_002(self):
         """ test case for dictionary #2 """
         d = {'firstName': 'John', 'lastName': 'Smith'}
-        ref_struct = v.Dict({
-                re.compile('\w+'): str
-                },
-                            strict=False)
-        self.assertTrue(ref_struct.validate(d))
+        ref_struct = {re.compile('\w+'): str}
+        self.assertTrue(validate(ref_struct, d))
         d['anotherKey'] = 'look ma, still validates'
-        self.assertTrue(ref_struct.validate(d))
+        self.assertTrue(validate(ref_struct, d))
         d['badKey'] = 10
-        self.assertFalse(ref_struct.validate(d))
+        self.assertFalse(validate(ref_struct, d))
 
 
 if __name__ == '__main__':
