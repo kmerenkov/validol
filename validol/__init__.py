@@ -82,8 +82,8 @@ def validate_list(validator, data):
 def validate_hash(validator, data):
     if not isinstance(data, dict):
         return False
-    if validator == {} and data == {}:
-        return True
+    if validator == {}:
+        return data == {}
     used_validators = []
     for data_key, data_value in data.iteritems():
         data_valid = False
