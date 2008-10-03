@@ -104,6 +104,10 @@ class DictTestCase(unittest.TestCase):
         x = {}
         self.assertTrue(validate(x, {}))
 
+    def test_good_006(self):
+        x = {str: {str: str}}
+        self.assertTrue(validate(x, {'foo': {'bar': 'zar'}}))
+
     def test_bad_001(self):
         x = {}
         self.assertFalse(validate(x, []))
@@ -127,6 +131,10 @@ class DictTestCase(unittest.TestCase):
     def test_bad_006(self):
         x = {"foo": int, "bar": int}
         self.assertFalse(validate(x, {"bar": 10}))
+
+    def test_bad_007(self):
+        x = {str: {str: str}}
+        self.assertFalse(validate(x, {'foo': {'bar': 10}}))
 
 
 class JobRelatedTestCase(unittest.TestCase):

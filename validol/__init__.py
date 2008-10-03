@@ -121,6 +121,7 @@ def validate_hash(validator, data):
                 else:
                     used_many_validators += 1
                 data_valid = True
+                break
         if not data_valid:
             return False
     declared_many_validator_count = len(filter(lambda x: isinstance(x, Many), validator.keys()))
