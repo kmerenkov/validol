@@ -30,10 +30,23 @@ class AnyOfTestCase(unittest.TestCase):
         x = AnyOf([10, "bar"])
         self.assertTrue(x.validate("bar"))
 
+    def test_good_003(self):
+        x = {
+            AnyOf([int, str]): str
+            }
+        self.assertTrue(validate(x, {10: 'foo'}))
+        self.assertTrue(validate(x, {'bar': 'foo'}))
+
     def test_bad_001(self):
         """ must invalidate wrong types """
         x = AnyOf([int])
         self.assertFalse(x.validate("foo"))
+
+    def test_bad_003(self):
+        x = {
+            AnyOf([int, str]): str
+            }
+        self.assertFalse(validate(x, {10: 'foo', 'bar': 'zar'}))
 
 
 class ListTestCase(unittest.TestCase):
