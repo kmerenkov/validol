@@ -187,9 +187,17 @@ class DictTestCase(unittest.TestCase):
         x = {Optional(str): int}
         self.assertFalse(validate(x, {'a': 'b'}))
 
+    def test_optional_good_004(self):
+        x = {'a': 'b', 'c': 'd', Optional('foo'): 'bar', Optional('zoo'): 'xar'}
+        self.assertTrue(validate(x, {'a': 'b', 'c': 'd', 'zoo': 'xar'}))
+
+    def test_optional_bad_004(self):
+        x = {'a': 'b', 'c': 'd', Optional('foo'): 'bar', Optional('zoo'): 'xar'}
+        self.assertFalse(validate(x, {'a': 'b', 'c': 'd', 'zoo': 'bar'}))
 
 class JobRelatedTestCase(unittest.TestCase):
     """ production-use use-cases for me """
+
     def test_good_001(self):
         scheme = {
             Many(re.compile('\w+')): [{"id": int,
