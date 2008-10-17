@@ -162,6 +162,9 @@ def validate_hash_with_many(validator, data):
 
 
 class AnyOf(object):
+    """
+    Validates if data matches at least one scheme passed to AnyOf constructor.
+    """
     def __init__(self, validators=[]):
         self.validators = validators
 
@@ -180,6 +183,9 @@ class AnyOf(object):
 
 
 class Many(object):
+    """
+    Validates if one or more occurences of data match scheme.
+    """
     def __init__(self, data):
         self.data = data
 
@@ -194,6 +200,10 @@ class Many(object):
 
 
 class Optional(object):
+    """
+    When used as a key for hash, validates data if data matches scheme or if key is absent from hash.
+    When used anywehre else, validates data if data is None or if data is valid.
+    """
     def __init__(self, data):
         self.data = data
 
