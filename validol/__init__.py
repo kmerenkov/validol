@@ -71,7 +71,6 @@ def validate_common(validator, data):
             return True
     return False
 
-
 def validate_tuple(validator, data):
     if not isinstance(data, tuple):
         return False
@@ -98,10 +97,43 @@ def validate_list(validator, data):
 def validate_hash(validator, data):
     if not isinstance(data, dict):
         return False
-    if validator == data == {}: # empty data hash corresponds to empty scheme hash
+    if validator == data == {}:
         return True
     if validator == {} and data != {}:
         return False
+    optional_validators = {}
+    many_validators = {}
+    for v_key, v_val in validator.iteritems():
+        if isinstance(v_key, Optional):
+            optional_validators[v_key] = v_val
+        else:
+            many_validators[v_key] = v_val
+    ret_with_optional, passed_optional_data_keys = validate_hash_with_optional(optional_validators, data)
+
+    new_data = {}
+    for data_key, data_value in data.iteritems():
+        if data_key not in passed_optional_data_keys:
+            new_data[data_key] = data_value
+    if many_validators:
+        ret_with_many = validate_hash_with_many(many_validators, new_data)
+    else:
+        ret_with_many = True
+    return ret_with_many and ret_with_optional
+
+def validate_hash_with_optional(validator, data):
+    valid_data_keys = []
+    for validator_key, validator_value in validator.iteritems():
+        for data_key, data_value in data.iteritems():
+            is_valid_key = validate_common(validator_key, data_key)
+            is_valid_value = validate_common(validator_value, data_value)
+            if is_valid_key:
+                if is_valid_value:
+                    valid_data_keys.append(data_key)
+                else:
+                    return (False, [])
+    return (True, valid_data_keys)
+
+def validate_hash_with_many(validator, data):
     if validator != {} and data == {}:
         return False
     used_validators = []
@@ -141,7 +173,10 @@ class AnyOf(object):
         return False
 
     def __str__(self):
-        return "AnyOf: validators: %s" % str(self.validators)
+        return "<AnyOf: '%s'>" % str(self.validators)
+
+    def __repr__(self):
+        return self.__str__()
 
 
 class Many(object):
@@ -150,3 +185,23 @@ class Many(object):
 
     def validate(self, data):
         return validate_common(self.data, data)
+
+    def __str__(self):
+        return "<Many: '%s'>" % str(self.data)
+
+    def __repr__(self):
+        return self.__str__()
+
+
+class Optional(object):
+    def __init__(self, data):
+        self.data = data
+
+    def validate(self, data):
+        return data is None or validate_common(self.data, data)
+
+    def __str__(self):
+        return "<Optional: '%s'>" % str(self.data)
+
+    def __repr__(self):
+        return self.__str__()

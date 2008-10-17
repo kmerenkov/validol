@@ -16,7 +16,21 @@
 
 import unittest
 import re
-from __init__ import validate, AnyOf, Many
+from __init__ import validate, AnyOf, Many, Optional
+
+
+class OptionalTestCase(unittest.TestCase):
+    def test_good_001(self):
+        x = Optional(str)
+        self.assertTrue(validate(x, "foo"))
+
+    def test_good_002(self):
+        x = Optional(str)
+        self.assertTrue(validate(x, None))
+
+    def test_bad_001(self):
+        x = Optional(str)
+        self.assertFalse(validate(x, 10))
 
 
 class AnyOfTestCase(unittest.TestCase):
@@ -148,6 +162,30 @@ class DictTestCase(unittest.TestCase):
     def test_bad_007(self):
         x = {str: {str: str}}
         self.assertFalse(validate(x, {'foo': {'bar': 10}}))
+
+    def test_optional_good_001(self):
+        x = {str: Optional(10)}
+        self.assertTrue(validate(x, {'foo': 10}))
+
+    def test_optional_bad_001(self):
+        x = {str: Optional(10)}
+        self.assertTrue(validate(x, {'foo': None}))
+
+    def test_optional_good_002(self):
+        x = {Optional(str): int}
+        self.assertTrue(validate(x, {'foo': 10}))
+
+    def test_optional_bad_002(self):
+        x = {Optional(str): int}
+        self.assertTrue(validate(x, {}))
+
+    def test_optional_good_003(self):
+        x = {Optional('foo'): int, 'a': 'b'}
+        self.assertTrue(validate(x, {'foo': 10, 'a': 'b'}))
+
+    def test_optional_bad_003(self):
+        x = {Optional(str): int}
+        self.assertFalse(validate(x, {'a': 'b'}))
 
 
 class JobRelatedTestCase(unittest.TestCase):
