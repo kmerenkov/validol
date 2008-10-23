@@ -228,3 +228,38 @@ class Optional(object):
 
     def __repr__(self):
         return self.__str__()
+
+
+class Scheme(object):
+    """
+    Wrapper for valid scheme. Sometimes it is useful to wrap scheme or
+    schemes into object to use inside your code.
+
+    Arguments:
+    - schemes: one or more schemes for validation.
+
+    Returns: True if data is valid for at least one scheme.
+
+    Example:
+      scheme1 = {'id': int}
+      scheme2 = {'name': str}
+      scheme3 = {'email': str}
+      s = Scheme(scheme1, scheme2, schem3)
+      s.validate({'id': 10})
+
+    BIG FAT NOTE: You don't want to use this class inside scheme.
+    """
+    def __init__(self, *schemes):
+        self.schemes = schemes
+
+    def validate(self, data):
+        for scheme in self.schemes:
+            if validate(scheme, data):
+                return True
+        return False
+
+    def __str__(self):
+        return "<Scheme: '%s'>" % str(self.schemes)
+
+    def __repr__(self):
+        return self.__str__()

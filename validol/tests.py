@@ -16,7 +16,31 @@
 
 import unittest
 import re
-from __init__ import validate, AnyOf, Many, Optional
+from __init__ import validate, AnyOf, Many, Optional, Scheme
+
+
+class SchemeTestCase(unittest.TestCase):
+    def test_good_001(self):
+        s = Scheme({'id': int})
+        self.assertTrue(s.validate({'id': 10}))
+
+    def test_bad_001(self):
+        s = Scheme({'id': int})
+        self.assertFalse(s.validate({'id': '10'}))
+
+    def test_good_002(self):
+        scheme1 = {'id': int}
+        scheme2 = {'name': str}
+        scheme3 = {'email': str}
+        s = Scheme(scheme1, scheme2, scheme3)
+        self.assertTrue(s.validate({'id': 10}))
+
+    def test_bad_002(self):
+        scheme1 = {'id': int}
+        scheme2 = {'name': str}
+        scheme3 = {'email': str}
+        s = Scheme(scheme1, scheme2, scheme3)
+        self.assertFalse(s.validate({'foo': 'bar'}))
 
 
 class OptionalTestCase(unittest.TestCase):
