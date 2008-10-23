@@ -108,12 +108,19 @@ def validate_hash(validator, data):
             optional_validators[v_key] = v_val
         else:
             many_validators[v_key] = v_val
-    ret_with_optional, passed_optional_data_keys = validate_hash_with_optional(optional_validators, data)
+    if optional_validators:
+        ret_with_optional, passed_optional_data_keys = validate_hash_with_optional(optional_validators, data)
+    else:
+        ret_with_optional = True # we don't have optional keys, that's okay
 
     new_data = {}
-    for data_key, data_value in data.iteritems():
-        if data_key not in passed_optional_data_keys:
-            new_data[data_key] = data_value
+
+    if optional_validators:
+        for data_key, data_value in data.iteritems():
+            if data_key not in passed_optional_data_keys:
+                new_data[data_key] = data_value
+    else:
+        new_data = data
     if many_validators:
         ret_with_many = validate_hash_with_many(many_validators, new_data)
     else:
@@ -125,8 +132,8 @@ def validate_hash_with_optional(validator, data):
     for validator_key, validator_value in validator.iteritems():
         for data_key, data_value in data.iteritems():
             is_valid_key = validate_common(validator_key, data_key)
-            is_valid_value = validate_common(validator_value, data_value)
             if is_valid_key:
+                is_valid_value = validate_common(validator_value, data_value)
                 if is_valid_value:
                     valid_data_keys.append(data_key)
                 else:
@@ -145,19 +152,25 @@ def validate_hash_with_many(validator, data):
             if validator_key in used_validators:
                 continue
             is_valid_key = validate_common(validator_key, data_key)
-            is_valid_value = validate_common(validator_value, data_value)
-            if is_valid_key and is_valid_value:
-                valid_data_count += 1
-                if not isinstance(validator_key, Many):
-                    used_validators.append(validator_key)
-                else:
-                    used_many_validators += 1
-                data_valid = True
-                break
+            if is_valid_key:
+                is_valid_value = validate_common(validator_value, data_value)
+                if is_valid_value:
+                    valid_data_count += 1
+                    if not isinstance(validator_key, Many):
+                        used_validators.append(validator_key)
+                    else:
+                        used_many_validators += 1
+                    data_valid = True
+                    break
         if not data_valid:
             return False
-    declared_many_validator_count = len(filter(lambda x: isinstance(x, Many), validator.keys()))
-    unused_notmany_validator_count = len(filter(lambda x: x not in used_validators, validator.keys()))
+    declared_many_validator_count = 0
+    unused_notmany_validator_count = 0
+    for validator in validator.keys():
+        if isinstance(validator, Many):
+            declared_many_validator_count += 1
+        if validator not in used_validators:
+            unused_notmany_validator_count += 1
     return unused_notmany_validator_count == declared_many_validator_count
 
 
