@@ -135,7 +135,7 @@ class ListTestCase(unittest.TestCase):
 
     def test_bad_004(self):
         x = ()
-        self.assertFalse(validate(x, (10)))
+        self.assertFalse(validate(x, (10,)))
 
     def test_bad_005(self):
         x = (int, str, bool)

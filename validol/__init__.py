@@ -31,20 +31,21 @@ class BaseValidator(object):
 
 
 def kind_of(obj):
-    if getattr(obj, "__class__", False) and issubclass(obj.__class__, BaseValidator):
-        return TYPE_VALIDATOR
-    elif isinstance(obj, dict):
+    if isinstance(obj, dict):
         return TYPE_DICTIONARY
     elif isinstance(obj, list):
         return TYPE_LIST
     elif isinstance(obj, tuple):
         return TYPE_TUPLE
-    elif getattr(obj, "match", False) and getattr(obj, "search", False):
-        return TYPE_REGEX
     elif obj in [str,unicode,int,bool,dict,float]:
         return TYPE_TYPE
     elif obj == object:
         return TYPE_OBJECT
+    elif getattr(obj, "__class__", False) and issubclass(obj.__class__, BaseValidator):
+        return TYPE_VALIDATOR
+    # this f##king SRE_Pattern, why can't I f##king kill it
+    elif getattr(obj, "match", False) and getattr(obj, "search", False):
+        return TYPE_REGEX
     else:
         return TYPE_UNKNOWN
 
