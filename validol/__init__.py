@@ -192,8 +192,7 @@ class AnyOf(BaseValidator):
 
     def validate(self, data):
         for validator in self.validators:
-            ret = validate_common(validator, data)
-            if ret:
+            if validate_common(validator, data):
                 return True
         return False
 
