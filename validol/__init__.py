@@ -22,8 +22,16 @@ TYPE_OBJECT = 6
 TYPE_TUPLE = 7
 
 
+class BaseValidator(object):
+    def validate(self, data):
+        raise NotImplementedError("Inherit this class and override this method.")
+
+    def __repr__(self):
+        return str(self)
+
+
 def kind_of(obj):
-    if getattr(obj, "validate", False):
+    if getattr(obj, "__class__", False) and issubclass(obj.__class__, BaseValidator):
         return TYPE_VALIDATOR
     elif isinstance(obj, dict):
         return TYPE_DICTIONARY
@@ -174,11 +182,11 @@ def validate_hash_with_many(validator, data):
     return unused_notmany_validator_count == declared_many_validator_count
 
 
-class AnyOf(object):
+class AnyOf(BaseValidator):
     """
     Validates if data matches at least one scheme passed to AnyOf constructor.
     """
-    def __init__(self, validators=[]):
+    def __init__(self, *validators):
         self.validators = validators
 
     def validate(self, data):
@@ -191,11 +199,8 @@ class AnyOf(object):
     def __str__(self):
         return "<AnyOf: '%s'>" % str(self.validators)
 
-    def __repr__(self):
-        return self.__str__()
 
-
-class Many(object):
+class Many(BaseValidator):
     """
     Validates if one or more occurences of data match scheme.
     """
@@ -208,11 +213,8 @@ class Many(object):
     def __str__(self):
         return "<Many: '%s'>" % str(self.data)
 
-    def __repr__(self):
-        return self.__str__()
 
-
-class Optional(object):
+class Optional(BaseValidator):
     """
     When used as a key for hash, validates data if data matches scheme or if key is absent from hash.
     When used anywehre else, validates data if data is None or if data is valid.
@@ -226,40 +228,10 @@ class Optional(object):
     def __str__(self):
         return "<Optional: '%s'>" % str(self.data)
 
-    def __repr__(self):
-        return self.__str__()
 
-
-class Scheme(object):
+class Scheme(AnyOf):
     """
-    Wrapper for valid scheme. Sometimes it is useful to wrap scheme or
-    schemes into object to use inside your code.
-
-    Arguments:
-    - schemes: one or more schemes for validation.
-
-    Returns: True if data is valid for at least one scheme.
-
-    Example:
-      scheme1 = {'id': int}
-      scheme2 = {'name': str}
-      scheme3 = {'email': str}
-      s = Scheme(scheme1, scheme2, schem3)
-      s.validate({'id': 10})
-
-    BIG FAT NOTE: You don't want to use this class inside scheme.
+    This class exist to make raw structure have type (type of Scheme).
     """
-    def __init__(self, *schemes):
-        self.schemes = schemes
-
-    def validate(self, data):
-        for scheme in self.schemes:
-            if validate(scheme, data):
-                return True
-        return False
-
     def __str__(self):
-        return "<Scheme: '%s'>" % str(self.schemes)
-
-    def __repr__(self):
-        return self.__str__()
+        return "<Scheme: '%s'>" % str(self.validators)

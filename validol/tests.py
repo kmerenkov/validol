@@ -16,8 +16,21 @@
 
 import unittest
 import re
-from __init__ import validate, AnyOf, Many, Optional, Scheme
+from __init__ import validate, AnyOf, Many, Optional, Scheme, BaseValidator
 
+
+class BaseValidatorTestCase(unittest.TestCase):
+    def test_good_001(self):
+        """ must throw exception on attempt to use its validate method """
+        v = BaseValidator()
+        self.assertRaises(NotImplementedError, v.validate, int)
+
+    def test_good_002(self):
+        """ all validators must be inherited from BaseValidator """
+        # I don't really think it belongs to this test case
+        for v in [AnyOf, Many, Optional, Scheme]:
+            result = issubclass(v, BaseValidator)
+            self.assertTrue(result)
 
 class SchemeTestCase(unittest.TestCase):
     def test_good_001(self):
@@ -60,29 +73,29 @@ class OptionalTestCase(unittest.TestCase):
 class AnyOfTestCase(unittest.TestCase):
     def test_good_001(self):
         """ must validate one type """
-        x = AnyOf([int])
+        x = AnyOf(int)
         self.assertTrue(x.validate(10))
 
     def test_good_002(self):
         """ must validate few types """
-        x = AnyOf([10, "bar"])
+        x = AnyOf(10, "bar")
         self.assertTrue(x.validate("bar"))
 
     def test_good_003(self):
         x = {
-            AnyOf([int, str]): str
+            AnyOf(int, str): str
             }
         self.assertTrue(validate(x, {10: 'foo'}))
         self.assertTrue(validate(x, {'bar': 'foo'}))
 
     def test_bad_001(self):
         """ must invalidate wrong types """
-        x = AnyOf([int])
+        x = AnyOf(int)
         self.assertFalse(x.validate("foo"))
 
     def test_bad_003(self):
         x = {
-            AnyOf([int, str]): str
+            AnyOf(int, str): str
             }
         self.assertFalse(validate(x, {10: 'foo', 'bar': 'zar'}))
 
@@ -270,7 +283,7 @@ class SamplesTestCase(unittest.TestCase):
     def test_integer_list_003(self):
         """ test case for integer list sample #3 """
         l = [10, "foo", 15," bar"]
-        scheme = [AnyOf([int, str])]
+        scheme = [AnyOf(int, str)]
         self.assertTrue(validate(scheme, l))
         l.append(True)
         self.assertFalse(validate(scheme, l))
