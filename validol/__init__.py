@@ -31,11 +31,12 @@ class BaseValidator(object):
 
 
 def kind_of(obj):
-    if isinstance(obj, dict):
+    # why don't I use isinstance - it saves us big time
+    if type(obj) == dict:
         return TYPE_DICTIONARY
-    elif isinstance(obj, list):
+    elif type(obj) == list:
         return TYPE_LIST
-    elif isinstance(obj, tuple):
+    elif type(obj) == tuple:
         return TYPE_TUPLE
     elif obj in [str,unicode,int,bool,dict,float]:
         return TYPE_TYPE
@@ -72,16 +73,12 @@ def validate_common(validator, data):
     elif kind == TYPE_OBJECT:
         return True
     elif kind == TYPE_TYPE:
-        # workaround for bool, because bool is a subclass of int
-        if type(data) == bool:
-            if type(data) == validator:
-                return True
-        elif isinstance(data, validator):
+        if type(data) == validator:
             return True
     return False
 
 def validate_tuple(validator, data):
-    if not isinstance(data, tuple):
+    if type(data) != tuple:
         return False
     if len(validator) != len(data):
         return False
@@ -91,7 +88,7 @@ def validate_tuple(validator, data):
     return True
 
 def validate_list(validator, data):
-    if not isinstance(data, list):
+    if type(data) != list:
         return False
     if len(validator) == 0:
         return len(data) == 0
@@ -104,7 +101,7 @@ def validate_list(validator, data):
     return True
 
 def validate_hash(validator, data):
-    if not isinstance(data, dict):
+    if type(data) != dict:
         return False
     if validator == data == {}:
         return True
@@ -113,7 +110,7 @@ def validate_hash(validator, data):
     optional_validators = {}
     many_validators = {}
     for v_key, v_val in validator.iteritems():
-        if isinstance(v_key, Optional):
+        if type(v_key) == Optional:
             optional_validators[v_key] = v_val
         else:
             many_validators[v_key] = v_val
@@ -165,10 +162,10 @@ def validate_hash_with_many(validator, data):
                 is_valid_value = validate_common(validator_value, data_value)
                 if is_valid_value:
                     valid_data_count += 1
-                    if not isinstance(validator_key, Many):
-                        used_validators.append(validator_key)
-                    else:
+                    if type(validator_key) == Many:
                         used_many_validators += 1
+                    else:
+                        used_validators.append(validator_key)
                     data_valid = True
                     break
         if not data_valid:
@@ -176,7 +173,7 @@ def validate_hash_with_many(validator, data):
     declared_many_validator_count = 0
     unused_notmany_validator_count = 0
     for validator in validator.keys():
-        if isinstance(validator, Many):
+        if type(validator) == Many:
             declared_many_validator_count += 1
         if validator not in used_validators:
             unused_notmany_validator_count += 1

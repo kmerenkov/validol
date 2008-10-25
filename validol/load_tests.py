@@ -18,7 +18,7 @@ import unittest
 from __init__ import validate, AnyOf, Many, Optional, Scheme, BaseValidator
 
 
-class LoadTestCase(unittest.TestCase):
+class DictTestCase(unittest.TestCase):
     def test_hash_good_001(self):
         x = dict(map(lambda x: (str(x), x), xrange(1000)))
         s = dict(map(lambda x: (str(x), int), xrange(1000)))
