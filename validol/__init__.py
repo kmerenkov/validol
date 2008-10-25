@@ -123,7 +123,7 @@ def validate_hash(validator, data):
     new_data = {}
     if optional_validators and passed_optional_data_keys != {}:
         for data_key, data_value in data.iteritems():
-            if not passed_optional_data_keys.has_key(data_key):
+            if data_key not in passed_optional_data_keys:
                 new_data[data_key] = data_value
     else:
         new_data = data
@@ -137,7 +137,7 @@ def validate_hash_with_optional(validator, data):
     valid_data_keys = {} # {} is faster than [] obviously
     for validator_key, validator_value in validator.iteritems():
         for data_key, data_value in data.iteritems():
-            if valid_data_keys.has_key(data_key):
+            if data_key in valid_data_keys:
                 continue
             if validate_common(validator_key, data_key):
                 if validate_common(validator_value, data_value):
@@ -155,7 +155,7 @@ def validate_hash_with_many(validator, data):
     for data_key, data_value in data.iteritems():
         data_valid = False
         for validator_key, validator_value in validator.iteritems():
-            if used_validators.has_key(validator_key):
+            if validator_key in used_validators:
                 continue
             if validate_common(validator_key, data_key):
                 if validate_common(validator_value, data_value):
@@ -173,7 +173,7 @@ def validate_hash_with_many(validator, data):
     for validator in validator.keys():
         if type(validator) == Many:
             declared_many_validator_count += 1
-        if not used_validators.has_key(validator):
+        if not validator in used_validators:
             unused_notmany_validator_count += 1
     return unused_notmany_validator_count == declared_many_validator_count
 
