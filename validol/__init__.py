@@ -134,16 +134,12 @@ def validate_hash(validator, data):
 
 def validate_hash_with_optional(validator, data):
     valid_data_keys = {} # speed gain
-    used_validators = {} # same
     for validator_key, validator_value in validator.iteritems():
-        if used_validators.has_key(validator_key):
-            continue
         for data_key, data_value in data.iteritems():
             if valid_data_keys.has_key(data_key):
                 continue
             if validate_common(validator_key, data_key):
                 if validate_common(validator_value, data_value):
-                    used_validators[validator_key] = data_key
                     valid_data_keys[data_key] = None
                 else:
                     return (False, {})
