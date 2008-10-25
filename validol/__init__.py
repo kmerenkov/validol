@@ -119,8 +119,8 @@ def validate_hash(validator, data):
     else:
         ret_with_optional = True # we don't have optional keys, that's okay
 
+    new_data = {}
     if optional_validators and passed_optional_data_keys != {}:
-        new_data = {}
         for data_key, data_value in data.iteritems():
             if not passed_optional_data_keys.has_key(data_key):
                 new_data[data_key] = data_value
@@ -133,13 +133,17 @@ def validate_hash(validator, data):
     return ret_with_many and ret_with_optional
 
 def validate_hash_with_optional(validator, data):
-    valid_data_keys = {} # speed again
+    valid_data_keys = {} # speed gain
+    used_validators = {} # same
     for validator_key, validator_value in validator.iteritems():
+        if used_validators.has_key(validator_key):
+            continue
         for data_key, data_value in data.iteritems():
-            is_valid_key = validate_common(validator_key, data_key)
-            if is_valid_key:
-                is_valid_value = validate_common(validator_value, data_value)
-                if is_valid_value:
+            if valid_data_keys.has_key(data_key):
+                continue
+            if validate_common(validator_key, data_key):
+                if validate_common(validator_value, data_value):
+                    used_validators[validator_key] = data_key
                     valid_data_keys[data_key] = None
                 else:
                     return (False, {})
