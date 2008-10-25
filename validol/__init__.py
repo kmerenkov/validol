@@ -79,7 +79,7 @@ def validate_common(validator, data):
     return False
 
 def validate_tuple(validator, data):
-    if type(data) != tuple:
+    if type(data) is not tuple:
         return False
     if len(validator) != len(data):
         return False
@@ -89,7 +89,7 @@ def validate_tuple(validator, data):
     return True
 
 def validate_list(validator, data):
-    if type(data) != list:
+    if type(data) is not list:
         return False
     if len(validator) == 0:
         return len(data) == 0
@@ -102,7 +102,7 @@ def validate_list(validator, data):
     return True
 
 def validate_hash(validator, data):
-    if type(data) != dict:
+    if type(data) is not dict:
         return False
     if validator == data == {}:
         return True
@@ -111,7 +111,7 @@ def validate_hash(validator, data):
     optional_validators = {}
     many_validators = {}
     for v_key, v_val in validator.iteritems():
-        if type(v_key) == Optional:
+        if type(v_key) is Optional:
             optional_validators[v_key] = v_val
         else:
             many_validators[v_key] = v_val
@@ -160,7 +160,7 @@ def validate_hash_with_many(validator, data):
             if validate_common(validator_key, data_key):
                 if validate_common(validator_value, data_value):
                     valid_data_count += 1
-                    if type(validator_key) == Many:
+                    if type(validator_key) is Many:
                         used_many_validators += 1
                     else:
                         used_validators[validator_key] = None
@@ -171,7 +171,7 @@ def validate_hash_with_many(validator, data):
     declared_many_validator_count = 0
     unused_notmany_validator_count = 0
     for validator in validator.keys():
-        if type(validator) == Many:
+        if type(validator) is Many:
             declared_many_validator_count += 1
         if not validator in used_validators:
             unused_notmany_validator_count += 1
