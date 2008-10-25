@@ -32,13 +32,14 @@ class BaseValidator(object):
 
 def kind_of(obj):
     # why don't I use isinstance - it saves us big time
-    if type(obj) == dict:
+    obj_type = type(obj)
+    if obj_type == dict:
         return TYPE_DICTIONARY
-    elif type(obj) == list:
+    elif obj_type == list:
         return TYPE_LIST
-    elif type(obj) == tuple:
+    elif obj_type == tuple:
         return TYPE_TUPLE
-    elif obj in [str,unicode,int,bool,dict,float]:
+    elif obj in [str,unicode,int,bool,float]:
         return TYPE_TYPE
     elif obj == object:
         return TYPE_OBJECT
