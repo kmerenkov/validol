@@ -312,29 +312,5 @@ class SamplesTestCase(unittest.TestCase):
         self.assertFalse(validate(scheme, d))
 
 
-class LoadTestCase(unittest.TestCase):
-    def test_hash_good_001(self):
-        x = dict(map(lambda x: (str(x), x), xrange(1000)))
-        s = dict(map(lambda x: (str(x), int), xrange(1000)))
-        self.assertTrue(validate(s, x))
-
-    def test_hash_bad_001(self):
-        x = dict(map(lambda x: (str(x), x), xrange(1000)))
-        s = dict(map(lambda x: (str(x), int), xrange(1000)))
-        s['999'] = str
-        self.assertFalse(validate(s, x))
-
-    def test_hash_good_002(self):
-        x = dict(map(lambda x: (str(x), x), xrange(1000)))
-        s = dict(map(lambda x: (Optional(str(x)), int), xrange(1000)))
-        self.assertTrue(validate(s, x))
-
-    def test_hash_bad_002(self):
-        x = dict(map(lambda x: (str(x), x), xrange(1000)))
-        s = dict(map(lambda x: (Optional(str(x)), int), xrange(1000)))
-        del s['999']
-        self.assertFalse(validate(s, x))
-
-
 if __name__ == '__main__':
     unittest.main()
