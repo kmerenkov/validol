@@ -16,12 +16,33 @@
 
 from distutils.core import setup
 
+import validol
+import re
+
+def get_version():
+    return validol.__version__
+
+def get_author():
+    return validol.__author__
+
+def get_author_email():
+    author = get_author()
+    re_email = re.compile(r'.*\<(?P<email>.+)\>.*')
+    m = re_email.match(author)
+    if m:
+        return m.group('email')
+    else:
+        return None
+
 
 setup(name='validol',
-      version='0.1',
+      version=get_version(),
       description='Python basic structure validator',
-      author='Konstantin Merenkov',
-      author_email='kmerenkov@gmail.com',
+      author=get_author(),
+      maintainer=get_author(),
+      author_email=get_author_email(),
+      maintainer_email=get_author_email(),
+      license='WTFPL version 2 (http://sam.zoy.org/wtfpl/)',
       url='http://github.com/kmerenkov/validol/tree/master',
       packages=['validol'])
 
