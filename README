@@ -1,23 +1,37 @@
 Copyright (c) 2008 by Konstantin Merenkov <kmerenkov@gmail.com>
-Project's homepage: http://github.com/kmerenkov/struct_validator/tree/master
+Project's homepage: http://github.com/kmerenkov/validol/tree/master
 
-==== About ====
-This is a small library which lets you validate structures, something like
-DTD for XML, except structure' scheme is valid python code and made of
-valid python objects.
-
-==== Why ====
-I needed something to perform validation of json objects we use in our
-project at work.
-
-==== License ====
 See LICENSE file in the same directory as this README
 
-==== Help? Documentation? ====
-At the moment of initial commit, there are 40 tests. The day you are reading
-this text maybe even more.
-You can get idea of how to use it from test cases.
 
-==== Other ====
-This library is probably far from being bug-free. It took me few hours to
-complete it.
+==== About ====
+Validol gives you ability to validate simple
+python structures.
+I wrote this code to validate JSON requests.
+
+
+==== Help? Documentation? ====
+There are many unittests shipped with the sourcecode. Peek there to find out
+how to use validol. From what I can say, usage is very easy and "declarative".
+Also, classes have some sort of docstrings.
+
+
+==== Speed? ====
+There is a file called load_tests.py
+Try tests from there and see the results.
+From what I can say - unless your data has thousands of items you have
+no problems.
+
+However, I will give you few tips:
+1. Lists and tuples are fastest to validate.
+2. Hashes are fast enough (1000 items about 1.3s atm)
+3. 'Optional' type is slow as hell in hashes (1000 items about 7s atm)
+4. Rest is okay.
+
+If you want to validate incoming JSON objects for your RPC - you should
+not worry.
+
+
+==== Stability? ====
+The code is probably far from being bug-free, but as soon as I find a bug I
+fix it. There are many tests (more than 50 at the moment of writing this text).
