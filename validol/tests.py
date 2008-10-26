@@ -14,6 +14,9 @@
 #  0. You just DO WHAT THE FUCK YOU WANT TO.
 
 
+__author__  = "Konstantin Merenkov <kmerenkov@gmail.com>"
+
+
 import unittest
 import re
 from __init__ import validate, AnyOf, Many, Optional, Scheme, BaseValidator

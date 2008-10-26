@@ -12,6 +12,10 @@
 #  0. You just DO WHAT THE FUCK YOU WANT TO.
 
 
+__version__ = "0.1"
+__author__  = "Konstantin Merenkov <kmerenkov@gmail.com>"
+
+
 TYPE_UNKNOWN = 0
 TYPE_VALIDATOR = 1
 TYPE_LIST = 2
@@ -23,7 +27,18 @@ TYPE_TUPLE = 7
 
 
 class BaseValidator(object):
+    """
+    All other validators inherit this baseclass. You want to use this class
+    only if you write your own validator, otherwise you should not care
+    about it.
+    """
+
     def validate(self, data):
+        """
+        For all validators this function validates data and returns True if data
+        is found to be valid, False otherwise.
+        For this base class this function throws NotImplementedError.
+        """
         raise NotImplementedError("Inherit this class and override this method.")
 
     def __repr__(self):
@@ -52,6 +67,10 @@ def kind_of(obj):
         return TYPE_UNKNOWN
 
 def validate(scheme, data):
+    """
+    Validates data against scheme. Returns True if data
+    found to be valid, False otherwise.
+    """
     return validate_common(scheme, data)
 
 def validate_common(validator, data):
@@ -180,7 +199,7 @@ def validate_hash_with_many(validator, data):
 
 class AnyOf(BaseValidator):
     """
-    Validates if data matches at least one scheme passed to AnyOf constructor.
+    Validates if data matches at least one of specified schemes.
     """
     def __init__(self, *validators):
         self.validators = validators
@@ -197,7 +216,7 @@ class AnyOf(BaseValidator):
 
 class Many(BaseValidator):
     """
-    Validates if one or more occurences of data match scheme.
+    Validates if one or more occurences of data match specified scheme.
     """
     def __init__(self, data):
         self.data = data
@@ -227,6 +246,8 @@ class Optional(BaseValidator):
 class Scheme(AnyOf):
     """
     This class exist to make raw structure have type (type of Scheme).
+    Often it is useful, often it is not - depends on your needs.
+    Behaves exactly as AnyOf, except has different str and repr methods.
     """
     def __str__(self):
         return "<Scheme: '%s'>" % str(self.validators)
