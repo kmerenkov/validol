@@ -273,6 +273,20 @@ class JobRelatedTestCase(unittest.TestCase):
             }
         self.assertFalse(validate(scheme, data))
 
+    def test_good_002(self):
+        scheme = {Optional('select'): [str],
+                  Optional('limit'): int,
+                  Optional('offset'): int,}
+        data = {}
+        self.assertTrue(validate(scheme, data))
+
+    def test_bad_002(self):
+        scheme = {Optional('select'): [str],
+                  Optional('limit'): int,
+                  Optional('offset'): int,}
+        data = {'foo': 'bar'}
+        self.assertFalse(validate(scheme, data))
+
 
 class SamplesTestCase(unittest.TestCase):
     def test_integer_list_001(self):
