@@ -237,7 +237,7 @@ class Many(BaseValidator):
 class Optional(BaseValidator):
     """
     When used as a key for hash, validates data if data matches scheme or if key is absent from hash.
-    When used anywehre else, validates data if data is None or if data is valid.
+    When used anywhere else, validates data if data is None or if data is valid.
     """
     def __init__(self, data):
         self.data = data
