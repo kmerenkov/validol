@@ -167,6 +167,7 @@ def validate_hash_with_optional(validator, data):
                     used_validators_count += 1
                     if used_validators_count == validator_count:
                         return (True, valid_data_keys)
+                    break
                 else:
                     return (False, {})
     return (True, valid_data_keys)
