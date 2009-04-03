@@ -44,5 +44,5 @@ setup(name='validol',
       maintainer_email=get_author_email(),
       license='WTFPL version 2 (http://sam.zoy.org/wtfpl/)',
       url='http://github.com/kmerenkov/validol/tree/master',
-      packages=['validol'])
+      py_modules=['validol'])
 

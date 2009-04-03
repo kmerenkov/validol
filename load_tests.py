@@ -18,7 +18,7 @@ __author__  = "Konstantin Merenkov <kmerenkov@gmail.com>"
 
 
 import unittest
-from __init__ import validate, AnyOf, Many, Optional, Scheme, BaseValidator
+from validol import validate, AnyOf, Many, Optional, Scheme, BaseValidator
 
 
 class DictTestCase(unittest.TestCase):

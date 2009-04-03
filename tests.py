@@ -19,7 +19,7 @@ __author__  = "Konstantin Merenkov <kmerenkov@gmail.com>"
 
 import unittest
 import re
-from __init__ import validate, AnyOf, Many, Optional, Scheme, BaseValidator
+from validol import validate, AnyOf, Many, Optional, Scheme, BaseValidator
 
 
 class BaseValidatorTestCase(unittest.TestCase):
