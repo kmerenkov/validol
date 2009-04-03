@@ -18,7 +18,7 @@ __author__  = "Konstantin Merenkov <kmerenkov@gmail.com>"
 
 
 import unittest
-from validol import validate, AnyOf, Many, Optional, Scheme, BaseValidator
+from validol import validate, AnyOf, Many, Optional
 
 
 class DictTestCase(unittest.TestCase):
@@ -42,6 +42,16 @@ class DictTestCase(unittest.TestCase):
         x = dict(map(lambda x: (str(x), x), xrange(1000)))
         s = dict(map(lambda x: (Optional(str(x)), int), xrange(1000)))
         s['999'] = str
+        self.assertFalse(validate(s, x))
+
+    def test_good_003(self):
+        x = dict(map(lambda x: (str(x), x), xrange(1000)))
+        s = {Many(str): int}
+        self.assertTrue(validate(s, x))
+
+    def test_bad_003(self):
+        x = dict(map(lambda x: (str(x), x), xrange(1000)))
+        s = {Many(str): int, 'foo': 'bar'}
         self.assertFalse(validate(s, x))
 
 
