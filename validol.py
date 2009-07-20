@@ -172,7 +172,7 @@ def validate_list(validator, data):
         return len(data) == 0
     if len(validator) == 1:
         v = validator[0]
-        if not all(imap(lambda item: _validate_common(v, item), data)):
+        if not all(imap(lambda item: validate_common(v, item), data)):
             return False
     elif len(validator) > 1:
         raise NotImplementedError, "You cannot specify more than one validator for list at the moment."
