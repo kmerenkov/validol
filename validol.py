@@ -31,6 +31,13 @@ class BaseValidator(object):
     All other validators inherit this baseclass. You want to use this class
     only if you write your own validator, otherwise you should not care
     about it.
+
+    Call to validate method results in NotImplementedError exception.
+
+    >>> BaseValidator().validate("foo")
+    Traceback (most recent call last):
+    ...
+    NotImplementedError: Inherit this class and override this method.
     """
 
     def validate(self, data):
@@ -46,6 +53,25 @@ class BaseValidator(object):
 
 
 def kind_of(obj):
+    """
+    >>> kind_of({'a': 'b'}) == TYPE_DICTIONARY
+    True
+    >>> kind_of([1,2,3]) == TYPE_LIST
+    True
+    >>> kind_of((1,2)) == TYPE_TUPLE
+    True
+    >>> kind_of(int) == TYPE_TYPE
+    True
+    >>> kind_of(object) == TYPE_OBJECT
+    True
+    >>> import re
+    >>> kind_of(re.compile('foo')) == TYPE_REGEX
+    True
+    >>> kind_of(BaseValidator()) == TYPE_VALIDATOR
+    True
+    >>> kind_of(42) == TYPE_UNKNOWN
+    True
+    """
     # why don't I use isinstance - it saves us big time
     obj_type = type(obj)
     if obj_type is dict:
@@ -98,6 +124,14 @@ def validate_common(validator, data):
     return False
 
 def validate_tuple(validator, data):
+    """
+    >>> validate_tuple((int, int), (1, 2))
+    True
+    >>> validate_tuple((int, str), (1, 2))
+    False
+    >>> validate_tuple((int,), 'foo')
+    False
+    """
     if type(data) is not tuple:
         return False
     if len(validator) != len(data):
@@ -108,6 +142,20 @@ def validate_tuple(validator, data):
     return True
 
 def validate_list(validator, data):
+    """
+    >>> validate_list([int], range(10))
+    True
+    >>> validate_list([int], 'foo')
+    False
+    >>> validate_list([str], 'foo')
+    False
+    >>> validate_list([str], ['foo'])
+    True
+    >>> validate_list([str, str], ['foo'])
+    Traceback (most recent call last):
+    ...
+    NotImplementedError: You cannot specify more than one validator for list at the moment.
+    """
     if type(data) is not list:
         return False
     if len(validator) == 0:
@@ -207,6 +255,13 @@ def validate_hash_with_many(validator, data):
 class AnyOf(BaseValidator):
     """
     Validates if data matches at least one of specified schemes.
+
+    >>> AnyOf(1, 2, 3).validate(1) # 1 or 2 or 3
+    True
+    >>> AnyOf(1, 2, 3).validate(2)
+    True
+    >>> AnyOf(1, 2, 3).validate(10)
+    False
     """
     def __init__(self, *validators):
         self.validators = validators
@@ -227,6 +282,9 @@ class Many(BaseValidator):
     1-to-1 comparison, i.e. same as validate(X, X).
 
     Validates if one or more occurences of data match specified scheme.
+
+    >>> Many('foo').validate('foo')
+    True
     """
     def __init__(self, data):
         self.data = data
@@ -242,6 +300,13 @@ class Optional(BaseValidator):
     """
     When used as a key for hash, validates data if data matches scheme or if key is absent from hash.
     When used anywhere else, validates data if data is None or if data is valid.
+
+    >>> Optional('foo').validate(None)
+    True
+    >>> Optional('foo').validate('foo')
+    True
+    >>> Optional('foo').validate('bar')
+    False
     """
     def __init__(self, data):
         self.data = data
@@ -261,3 +326,8 @@ class Scheme(AnyOf):
     """
     def __str__(self):
         return "<Scheme: '%s'>" % str(self.validators)
+
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
