@@ -223,6 +223,9 @@ class AnyOf(BaseValidator):
 
 class Many(BaseValidator):
     """
+    BIG FAT WARNING: Useful only for dict validation. In fact all it does is simple
+    1-to-1 comparison, i.e. same as validate(X, X).
+
     Validates if one or more occurences of data match specified scheme.
     """
     def __init__(self, data):
