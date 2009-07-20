@@ -16,6 +16,9 @@ __version__ = "0.1" # XXX Not always updated :\
 __author__  = "Konstantin Merenkov <kmerenkov@gmail.com>"
 
 
+from itertools import imap
+
+
 TYPE_UNKNOWN = 0
 TYPE_VALIDATOR = 1
 TYPE_LIST = 2
@@ -168,9 +171,9 @@ def validate_list(validator, data):
     if len(validator) == 0:
         return len(data) == 0
     if len(validator) == 1:
-        for item in data:
-            if not validate_common(validator[0], item):
-                return False
+        v = validator[0]
+        if not all(imap(lambda item: _validate_common(v, item), data)):
+            return False
     elif len(validator) > 1:
         raise NotImplementedError, "You cannot specify more than one validator for list at the moment."
     return True
