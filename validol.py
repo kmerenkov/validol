@@ -12,7 +12,7 @@
 #  0. You just DO WHAT THE FUCK YOU WANT TO.
 
 
-__version__ = "0.1"
+__version__ = "0.1" # XXX Not always updated :\
 __author__  = "Konstantin Merenkov <kmerenkov@gmail.com>"
 
 
