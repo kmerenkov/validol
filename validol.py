@@ -96,6 +96,13 @@ def validate(scheme, data):
     """
     Validates data against scheme. Returns True if data
     found to be valid, False otherwise.
+
+    >>> validate(1, 1) # validate simple data
+    True
+    >>> validate('foo', 'bar') # two different strings are not equal
+    False
+    >>> validate({'a': int, 'b': int}, {'a': 10, 'b': 20}) # more difficult example
+    True
     """
     return validate_common(scheme, data)
 
