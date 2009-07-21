@@ -124,13 +124,13 @@ def validate_common(validator, data):
     elif kind == TYPE_TUPLE:
         return validate_tuple(validator, data)
     elif kind == TYPE_UNKNOWN:
-        if data == validator:
-            return True
+        return data == validator
     elif kind == TYPE_OBJECT:
+        # NOTE In validol 'object' means anything,
+        # so it is always valid. It is like specifying .* in re
         return True
     elif kind == TYPE_TYPE:
-        if type(data) == validator:
-            return True
+        return type(data) == validator
     return False
 
 def validate_tuple(validator, data):
@@ -151,7 +151,7 @@ def validate_tuple(validator, data):
             return False
     return True
 
-def validate_list(validator, data):
+def validate_list(validators, data):
     """
     >>> validate_list([int], range(10))
     True
@@ -193,7 +193,8 @@ def validate_hash(validator, data):
         else:
             many_validators[v_key] = v_val
     if optional_validators:
-        ret_with_optional, passed_optional_data_keys = validate_hash_with_optional(optional_validators, data)
+        ret_with_optional, passed_optional_data_keys = validate_hash_with_optional(optional_validators,
+                                                                                   data)
         if not ret_with_optional: # optional validation has failed
             return False
     else:
@@ -201,7 +202,8 @@ def validate_hash(validator, data):
 
     new_data = {}
     if optional_validators and passed_optional_data_keys != {}:
-        new_data = dict(filter(lambda item: item[0] not in passed_optional_data_keys, data.iteritems()))
+        new_data = dict(filter(lambda item: item[0] not in passed_optional_data_keys,
+                               data.iteritems()))
     else:
         new_data = data
     ret_with_many = validate_hash_with_many(many_validators, new_data)
@@ -234,12 +236,11 @@ def validate_hash_with_many(validator, data):
     for data_key, data_value in data.iteritems():
         data_valid = False
         for validator_key, validator_value in copy_validator.items():
-            if validate_common(validator_key, data_key):
-                if validate_common(validator_value, data_value):
-                    if type(validator_key) is not Many:
-                        copy_validator.pop(validator_key)
-                    data_valid = True
-                    break
+            if validate_common(validator_key, data_key) and validate_common(validator_value, data_value):
+                if type(validator_key) is not Many:
+                    copy_validator.pop(validator_key)
+                data_valid = True
+                break
         if not data_valid:
             return False
     # count Many validators
@@ -277,7 +278,7 @@ class AnyOf(BaseValidator):
 class Many(BaseValidator):
     """
     BIG FAT WARNING: Useful only for dict validation. In fact all it does is simple
-    1-to-1 comparison, i.e. same as validate(X, X).
+    1-to-1 comparison, i.e. same as validate(X, X)  where X is some exact value.
 
     Validates if one or more occurences of data match specified scheme.
 
