@@ -208,18 +208,16 @@ def validate_hash(validator, data):
     return ret_with_many and ret_with_optional
 
 def validate_hash_with_optional(validator, data):
+    validator = dict(validator) # copy validator because later we modify it (pop keys out)
     valid_data_keys = {}
-    used_validators = {}
     validator_count = len(validator)
     used_validators_count = 0
     for data_key, data_value in data.iteritems():
-        for validator_key, validator_value in validator.iteritems():
-            if validator_key in used_validators:
-                continue
+        for validator_key, validator_value in validator.items():
             if validate_common(validator_key, data_key):
                 if validate_common(validator_value, data_value):
                     valid_data_keys[data_key] = None
-                    used_validators[validator_key] = None
+                    validator.pop(validator_key) # we don't need this validator in future
                     used_validators_count += 1
                     if used_validators_count == validator_count:
                         return (True, valid_data_keys)
