@@ -218,6 +218,7 @@ def validate_hash_with_optional(validator, data):
                     valid_data_keys[data_key] = None
                     validator.pop(validator_key) # we don't need this validator in future
                     used_validators_count += 1
+                    # exhausted all optional validators, good sign
                     if used_validators_count == validator_count:
                         return (True, valid_data_keys)
                     break
@@ -233,7 +234,8 @@ def validate_hash_with_many(validator, data):
     for data_key, data_value in data.iteritems():
         data_valid = False
         for validator_key, validator_value in copy_validator.items():
-            if validate_common(validator_key, data_key) and validate_common(validator_value, data_value):
+            if validate_common(validator_key, data_key) and \
+                    validate_common(validator_value, data_value):
                 if type(validator_key) is not Many:
                     copy_validator.pop(validator_key)
                 data_valid = True
@@ -241,9 +243,11 @@ def validate_hash_with_many(validator, data):
         if not data_valid:
             return False
     # count Many validators
-    declared_many_validator_count = len(filter(lambda v: type(v) is Many, orig_validator.keys()))
+    declared_many_validator_count = len(filter(lambda v: type(v) is Many,
+                                               orig_validator.keys()))
     # count "unused" validators (Many validators aren't marked as used)
-    unused_notmany_validator_count = len(filter(lambda v: v in copy_validator, orig_validator.keys()))
+    unused_notmany_validator_count = len(filter(lambda v: v in copy_validator,
+                                                orig_validator.keys()))
     # their quantity must be equal for data to be proven valid
     return unused_notmany_validator_count == declared_many_validator_count
 
