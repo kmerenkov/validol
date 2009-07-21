@@ -57,6 +57,16 @@ class BaseValidator(object):
 
 def kind_of(obj):
     """
+    Finds out what kind of object we have on hands.
+    For example, dicts, lists, and tuples have complex validation,
+    while str, int, float, and bool have simple validation, that looks like (!):
+
+    if (type(data) is some_type_mentioned_above):
+        return True
+
+    Be careful with objects, because in validol object means "I don't care"
+    and matches anything at all.
+
     >>> kind_of({'a': 'b'}) == TYPE_DICTIONARY
     True
     >>> kind_of([1,2,3]) == TYPE_LIST
@@ -76,6 +86,10 @@ def kind_of(obj):
     True
     """
     # why don't I use isinstance - it saves us big time
+
+    # dict, list, and tuple are differianted from str, unicode, int, bool, and float
+    # because they have special treatment and simple `==` or `is` is not enough to
+    # prove them valid.
     obj_type = type(obj)
     if obj_type is dict:
         return TYPE_DICTIONARY
