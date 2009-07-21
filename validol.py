@@ -83,7 +83,7 @@ def kind_of(obj):
         return TYPE_LIST
     elif obj_type is tuple:
         return TYPE_TUPLE
-    elif obj in [str,unicode,int,bool,float]:
+    elif obj in [str, unicode, int, bool, float]:
         return TYPE_TYPE
     elif obj is object:
         return TYPE_OBJECT
@@ -146,7 +146,7 @@ def validate_tuple(validator, data):
         return False
     if len(validator) != len(data):
         return False
-    for v,d in zip(validator, data):
+    for v, d in zip(validator, data):
         if not validate_common(v, d):
             return False
     return True
