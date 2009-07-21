@@ -229,27 +229,24 @@ def validate_hash_with_optional(validator, data):
 def validate_hash_with_many(validator, data):
     if validator != {} and data == {}:
         return False
-    used_validators = {} # greater speed in comparison with lists
+    orig_validator = validator
+    copy_validator = dict(validator)
     for data_key, data_value in data.iteritems():
         data_valid = False
-        for validator_key, validator_value in validator.iteritems():
-            if validator_key in used_validators:
-                continue
+        for validator_key, validator_value in copy_validator.items():
             if validate_common(validator_key, data_key):
                 if validate_common(validator_value, data_value):
                     if type(validator_key) is not Many:
-                        used_validators[validator_key] = None
+                        copy_validator.pop(validator_key)
                     data_valid = True
                     break
         if not data_valid:
             return False
-    declared_many_validator_count = 0
-    unused_notmany_validator_count = 0
-    for validator in validator.keys():
-        if type(validator) is Many:
-            declared_many_validator_count += 1
-        if not validator in used_validators:
-            unused_notmany_validator_count += 1
+    # count Many validators
+    declared_many_validator_count = len(filter(lambda v: type(v) is Many, orig_validator.keys()))
+    # count "unused" validators (Many validators aren't marked as used)
+    unused_notmany_validator_count = len(filter(lambda v: v in copy_validator, orig_validator.keys()))
+    # their quantity must be equal for data to be proven valid
     return unused_notmany_validator_count == declared_many_validator_count
 
 
