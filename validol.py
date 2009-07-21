@@ -146,10 +146,9 @@ def validate_tuple(validator, data):
         return False
     if len(validator) != len(data):
         return False
-    for v, d in zip(validator, data):
-        if not validate_common(v, d):
-            return False
-    return True
+    # all elements must be valid
+    return all(imap(lambda i: validate_common(i[0], i[1]),
+                    zip(validator, data)))
 
 def validate_list(validators, data):
     """
@@ -168,15 +167,13 @@ def validate_list(validators, data):
     """
     if type(data) is not list:
         return False
-    if len(validator) == 0:
+    if len(validators) == 0:
         return len(data) == 0
-    if len(validator) == 1:
-        v = validator[0]
-        if not all(imap(lambda item: validate_common(v, item), data)):
-            return False
-    elif len(validator) > 1:
-        raise NotImplementedError, "You cannot specify more than one validator for list at the moment."
-    return True
+    elif len(validators) == 1:
+        validator = validators[0]
+        return all(imap(lambda item: validate_common(validator, item), data))
+    elif len(validators) > 1:
+        raise NotImplementedError("You cannot specify more than one validator for list at the moment.")
 
 def validate_hash(validator, data):
     if type(data) is not dict:
@@ -266,10 +263,8 @@ class AnyOf(BaseValidator):
         self.validators = validators
 
     def validate(self, data):
-        for validator in self.validators:
-            if validate_common(validator, data):
-                return True
-        return False
+        """ returns True if data is valid for at least one validator. """
+        return any(imap(lambda validator: validate_common(validator, data), self.validators))
 
     def __str__(self):
         return "<AnyOf: '%s'>" % str(self.validators)
