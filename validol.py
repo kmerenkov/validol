@@ -201,9 +201,7 @@ def validate_hash(validator, data):
 
     new_data = {}
     if optional_validators and passed_optional_data_keys != {}:
-        for data_key, data_value in data.iteritems():
-            if data_key not in passed_optional_data_keys:
-                new_data[data_key] = data_value
+        new_data = dict(filter(lambda item: item[0] not in passed_optional_data_keys, data.iteritems()))
     else:
         new_data = data
     ret_with_many = validate_hash_with_many(many_validators, new_data)
