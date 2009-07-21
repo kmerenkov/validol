@@ -229,7 +229,7 @@ def validate_hash_with_optional(validator, data):
 def validate_hash_with_many(validator, data):
     if validator != {} and data == {}:
         return False
-    used_validators = {} # great speed in comparison with lists
+    used_validators = {} # greater speed in comparison with lists
     for data_key, data_value in data.iteritems():
         data_valid = False
         for validator_key, validator_value in validator.iteritems():
