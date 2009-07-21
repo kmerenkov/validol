@@ -230,8 +230,6 @@ def validate_hash_with_many(validator, data):
     if validator != {} and data == {}:
         return False
     used_validators = {} # great speed in comparison with lists
-    valid_data_count = 0
-    used_many_validators = 0
     for data_key, data_value in data.iteritems():
         data_valid = False
         for validator_key, validator_value in validator.iteritems():
@@ -239,10 +237,7 @@ def validate_hash_with_many(validator, data):
                 continue
             if validate_common(validator_key, data_key):
                 if validate_common(validator_value, data_value):
-                    valid_data_count += 1
-                    if type(validator_key) is Many:
-                        used_many_validators += 1
-                    else:
+                    if type(validator_key) is not Many:
                         used_validators[validator_key] = None
                     data_valid = True
                     break
