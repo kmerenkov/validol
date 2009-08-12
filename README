@@ -1,31 +1,34 @@
-Copyright (c) 2008 by Konstantin Merenkov <kmerenkov@gmail.com>
+Copyright (c) 2008, 2009 by Konstantin Merenkov <kmerenkov@gmail.com>
 Project's homepage: http://github.com/kmerenkov/validol/tree/master
 
 See LICENSE file in the same directory as this README
 
 
 ==== About ====
-Validol gives you ability to validate simple
-python structures.
+Validol gives you ability to validate simple python structures.
 I wrote this code to validate JSON requests.
+
+Long story short: you want it if:
+ - you are writing json-api for your service
+ - you want to validate any other native data structure :)
 
 
 ==== Help? Documentation? ====
-There are many unittests shipped with the sourcecode. Peek there to find out
+There are many unit tests shipped with the sourcecode. Peek there to find out
 how to use validol. From what I can say, usage is very easy and "declarative".
 Also, classes have some sort of docstrings.
 
 
 ==== Speed? ====
-There is a file called load_tests.py
-Try tests from there and see the results.
+There is a file called stress_tests.py
+It tests large structures. Time its execution time and see if it satisfies you.
 From what I can say - unless your data has thousands of items you have
 no problems.
 
 However, I will give you few tips:
 1. Lists and tuples are fastest to validate.
-2. Hashes are fast enough (1000 items about 1.3s atm)
-3. 'Optional' type is slow as hell in hashes (1000 items about 7s atm)
+2. Hashes are fast
+3. 'Optional' type is slower but still fast enough for you not to worry.
 4. Rest is okay.
 
 If you want to validate incoming JSON objects for your RPC - you should
@@ -33,5 +36,6 @@ not worry.
 
 
 ==== Stability? ====
-The code is probably far from being bug-free, but as soon as I find a bug I
-fix it. There are many tests (more than 50 at the moment of writing this text).
+The code is stable. When I find a bug I fix it as soon as possible, however
+it was a long time ago when I found anything wrong.
+There are many unit tests (more than 60).
