@@ -27,6 +27,7 @@ TYPE_TYPE = 4
 TYPE_DICTIONARY = 5
 TYPE_OBJECT = 6
 TYPE_TUPLE = 7
+TYPE_FUNCTION = 8
 
 
 class BaseValidator(object):
@@ -84,6 +85,8 @@ def kind_of(obj):
     True
     >>> kind_of(42) == TYPE_UNKNOWN
     True
+    >>> kind_of(lambda x: "123") == TYPE_FUNCTION
+    True
     """
     # why don't I use isinstance - it saves us big time
 
@@ -103,6 +106,8 @@ def kind_of(obj):
         return TYPE_OBJECT
     elif getattr(obj, "__class__", False) and issubclass(obj.__class__, BaseValidator):
         return TYPE_VALIDATOR
+    elif callable(obj):
+        return TYPE_FUNCTION
     # this f##king SRE_Pattern, why can't I f##king kill it
     elif getattr(obj, "match", False) and getattr(obj, "search", False):
         return TYPE_REGEX
@@ -120,6 +125,10 @@ def validate(scheme, data):
     False
     >>> validate({'a': int, 'b': int}, {'a': 10, 'b': 20}) # more difficult example
     True
+    >>> validate(lambda x: x > 10, 5)
+    False
+    >>> validate(lambda x: x > 10, 20)
+    True
     """
     return validate_common(scheme, data)
 
@@ -127,6 +136,9 @@ def validate_common(validator, data):
     kind = kind_of(validator)
     if kind == TYPE_VALIDATOR:
         if validator.validate(data):
+            return True
+    elif kind == TYPE_FUNCTION:
+        if validator(data):
             return True
     elif kind == TYPE_REGEX:
         if validator.match(data):

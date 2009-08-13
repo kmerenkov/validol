@@ -54,6 +54,16 @@ class DictTestCase(unittest.TestCase):
         s = {Many(str): int, 'foo': 'bar'}
         self.assertFalse(validate(s, x))
 
+    def test_good_004(self):
+        x = dict(map(lambda x: (str(x), x), xrange(1, 1000)))
+        s = {Many(str): lambda x: x > 0}
+        self.assertTrue(validate(s, x))
+
+    def test_bad_004(self):
+        x = dict(map(lambda x: (str(x), x), xrange(1, 1000)))
+        x['1000'] = 0
+        s = {Many(str): lambda x: x > 0}
+        self.assertFalse(validate(s, x))
 
 class ListTestCase(unittest.TestCase):
     def test_good_001(self):
@@ -61,9 +71,20 @@ class ListTestCase(unittest.TestCase):
         s = [str]
         self.assertTrue(validate(s, x))
 
+    def test_good_002(self):
+        x = [ x for x in xrange(1, 1000) ]
+        s = [lambda x: x > 0]
+        self.assertTrue(validate(s, x))
+
     def test_bad_001(self):
         x = [ str(x) for x in xrange(1000) ]
         s = [int]
+        self.assertFalse(validate(s, x))
+
+    def test_bad_002(self):
+        x = [ x for x in xrange(1, 1000) ]
+        x.append(0)
+        s = [lambda x: x > 0]
         self.assertFalse(validate(s, x))
 
 

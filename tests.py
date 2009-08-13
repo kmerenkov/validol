@@ -328,6 +328,16 @@ class SamplesTestCase(unittest.TestCase):
         d['badKey'] = 10
         self.assertFalse(validate(scheme, d))
 
+    def test_callables_001(self):
+        d = {'x': 10}
+        scheme = {'x': lambda x: x > 0}
+        self.assertTrue(validate(scheme,  d))
+
+    def test_callables_002(self):
+        d = {'x': -10}
+        scheme = {'x': lambda x: x > 0}
+        self.assertFalse(validate(scheme,  d))
+
 
 if __name__ == '__main__':
     unittest.main()
