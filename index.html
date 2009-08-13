@@ -61,6 +61,22 @@ Module that makes json validation simple.
         <li>no third-party dependencies</li>
         <li>many unit-tests</li>
     </ul>
+
+    <h2>Example</h2>
+    <p style="background-color: #3f3f3f; color: #dcdccc"><font face="monospace">
+<span style="background-color: #262626"><font color="#9fafaf">&nbsp;1 </font></span>&gt;&gt;&gt; scheme = {<font color="#cc9393">&quot;status&quot;</font>: <font color="#e3ceab">lambda</font>&nbsp;s: s <font color="#f0efd0">in</font>&nbsp;[<font color="#cc9393">&quot;ok&quot;</font>, <font color="#cc9393">&quot;error&quot;</font>],<br>
+<span style="background-color: #262626"><font color="#9fafaf">&nbsp;2 </font></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#cc9393">&quot;body&quot;</font>: <font color="#efef8f">str</font>}<br>
+<span style="background-color: #262626"><font color="#9fafaf">&nbsp;3 </font></span>&gt;&gt;&gt; data = {<font color="#cc9393">&quot;status&quot;</font>: <font color="#cc9393">&quot;ok&quot;</font>, <font color="#cc9393">&quot;body&quot;</font>: <font color="#cc9393">&quot;Been there done that&quot;</font>}<br>
+<span style="background-color: #262626"><font color="#9fafaf">&nbsp;4 </font></span>&gt;&gt;&gt; validate(scheme, data)<br>
+<span style="background-color: #262626"><font color="#9fafaf">&nbsp;5 </font></span><font color="#efefaf"><b>True</b></font><br>
+<span style="background-color: #262626"><font color="#9fafaf">&nbsp;6 </font></span><br>
+<span style="background-color: #262626"><font color="#9fafaf">&nbsp;7 </font></span>&gt;&gt;&gt; scheme = {<font color="#cc9393">&quot;status&quot;</font>: <font color="#e3ceab">lambda</font>&nbsp;s: s <font color="#f0efd0">in</font>&nbsp;[<font color="#cc9393">&quot;ok&quot;</font>, <font color="#cc9393">&quot;error&quot;</font>],<br>
+<span style="background-color: #262626"><font color="#9fafaf">&nbsp;8 </font></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#cc9393">&quot;body&quot;</font>: <font color="#efef8f">str</font>}<br>
+<span style="background-color: #262626"><font color="#9fafaf">&nbsp;9 </font></span>&gt;&gt;&gt; data = {<font color="#cc9393">&quot;status&quot;</font>: <font color="#cc9393">&quot;enonsense&quot;</font>, <font color="#cc9393">&quot;body&quot;</font>: <font color="#cc9393">&quot;Gotcha!&quot;</font>}<br>
+<span style="background-color: #262626"><font color="#9fafaf">10 </font></span>&gt;&gt;&gt; validate(scheme, data)<br>
+<span style="background-color: #262626"><font color="#9fafaf">11 </font></span><font color="#efefaf"><b>False</b></font><br>
+    </p>
+    <p><small>* Used vim's TOhtml function</small></p>
 <h2>Dependencies</h2>
 <p>Python itself (tested on 2.5 and 2.6)</p>
 <h2>Install</h2>
@@ -70,11 +86,8 @@ Module that makes json validation simple.
   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
  0. You just DO WHAT THE FUCK YOU WANT TO.</pre>
-<h2>Authors</h2>
+<h2>Authors / Contact</h2>
 <p>Konstantin Merenkov (kmerenkov@gmail.com)</p>
-<h2>Contact</h2>
-<p>Konstantin Merenkov (kmerenkov@gmail.com)</p>
-
 
     <h2>Download</h2>
     <p>
