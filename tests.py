@@ -19,7 +19,7 @@ __author__  = "Konstantin Merenkov <kmerenkov@gmail.com>"
 
 import unittest
 import re
-from validol import validate, AnyOf, Many, Optional, Scheme, BaseValidator
+from validol import validate, AnyOf, Many, Optional, Scheme, BaseValidator, Text
 
 
 class BaseValidatorTestCase(unittest.TestCase):
@@ -234,6 +234,21 @@ class DictTestCase(unittest.TestCase):
     def test_optional_bad_004(self):
         x = {'a': 'b', 'c': 'd', Optional('foo'): 'bar', Optional('zoo'): 'xar'}
         self.assertFalse(validate(x, {'a': 'b', 'c': 'd', 'zoo': 'bar'}))
+
+
+class TextTestCase(unittest.TestCase):
+    def test_str_001(self):
+        x = Text()
+        self.assertTrue(validate(x, str('abc')))
+
+    def test_unicode_001(self):
+        x = Text()
+        self.assertTrue(validate(x, unicode('abc')))
+
+    def test_int_001(self):
+        x = Text()
+        self.assertFalse(validate(x, 10))
+
 
 class JobRelatedTestCase(unittest.TestCase):
     """ production-use use-cases for me """

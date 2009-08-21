@@ -342,6 +342,19 @@ class Optional(BaseValidator):
         return "<Optional: '%s'>" % str(self.data)
 
 
+class Text(BaseValidator):
+    """
+    Passes on any textual data (be it str or unicode).
+    """
+    def __init__(self):
+        pass
+
+    def validate(self, data):
+        # I could do isinstance(data, basestring) but I remember it to be slow.
+        # Not sure if the code below is any faster :)
+        return AnyOf(str, unicode).validate(data)
+
+
 class Scheme(AnyOf):
     """
     This class exist to make raw structure have type (type of Scheme).
