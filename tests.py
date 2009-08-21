@@ -353,6 +353,21 @@ class SamplesTestCase(unittest.TestCase):
         scheme = {'x': lambda x: x > 0}
         self.assertFalse(validate(scheme,  d))
 
+    def test_callables_003(self):
+        d = {'x': 'boom'}
+        scheme = {'x': lambda x: x > 0}
+        self.assertTrue(validate(scheme, d)) # NOTE what the hell, seriously!
+
+    def test_callables_004(self):
+        d = {'x': "foo"}
+        scheme = {'x': lambda x: len(x) > 0}
+        self.assertTrue(validate(scheme, d))
+
+    def test_callables_005(self):
+        d = {'x': 10}
+        scheme = {'x': lambda x: len(x) > 0}
+        self.assertFalse(validate(scheme, d))
+
 
 if __name__ == '__main__':
     unittest.main()

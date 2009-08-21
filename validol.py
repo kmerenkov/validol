@@ -138,8 +138,11 @@ def validate_common(validator, data):
         if validator.validate(data):
             return True
     elif kind == TYPE_FUNCTION:
-        if validator(data):
-            return True
+        try:
+            if validator(data):
+                return True
+        except:
+            return False
     elif kind == TYPE_REGEX:
         if validator.match(data):
             return True
