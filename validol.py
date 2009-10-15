@@ -178,8 +178,7 @@ def validate_tuple(validator, data):
     if len(validator) != len(data):
         return False
     # all elements must be valid
-    return all(imap(lambda i: validate_common(i[0], i[1]),
-                    zip(validator, data)))
+    return all(imap(validate_common, validator, data))
 
 def validate_list(validators, data):
     """
