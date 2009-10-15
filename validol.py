@@ -195,14 +195,15 @@ def validate_list(validators, data):
     ...
     NotImplementedError: You cannot specify more than one validator for list at the moment.
     """
+    n_validators = len(validators)
     if type(data) is not list:
         return False
-    if len(validators) == 0:
+    if n_validators == 0:
         return len(data) == 0
-    elif len(validators) == 1:
+    elif n_validators == 1:
         validator = validators[0]
         return all(imap(lambda item: validate_common(validator, item), data))
-    elif len(validators) > 1:
+    elif n_validators > 1:
         raise NotImplementedError("You cannot specify more than one validator for list at the moment.")
 
 def validate_hash(validator, data):
