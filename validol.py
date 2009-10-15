@@ -29,6 +29,8 @@ TYPE_OBJECT = 6
 TYPE_TUPLE = 7
 TYPE_FUNCTION = 8
 
+ATOMIC_TYPES = set([str, unicode, int, bool, float])
+
 
 class BaseValidator(object):
     """
@@ -100,7 +102,7 @@ def kind_of(obj):
         return TYPE_LIST
     elif obj_type is tuple:
         return TYPE_TUPLE
-    elif obj in [str, unicode, int, bool, float]:
+    elif obj in ATOMIC_TYPES:
         return TYPE_TYPE
     elif obj is object:
         return TYPE_OBJECT
