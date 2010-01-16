@@ -195,9 +195,9 @@ def validate_list(validators, data):
     ...
     NotImplementedError: You cannot specify more than one validator for list at the moment.
     """
-    n_validators = len(validators)
     if type(data) is not list:
         return False
+    n_validators = len(validators)
     if n_validators == 0:
         return len(data) == 0
     elif n_validators == 1:
@@ -243,7 +243,7 @@ def validate_hash_with_optional(validator, data):
     validator_count = len(validator)
     used_validators_count = 0
     for data_key, data_value in data.iteritems():
-        for validator_key, validator_value in validator.items():
+        for validator_key, validator_value in validator.iteritems():
             if validate_common(validator_key, data_key):
                 if validate_common(validator_value, data_value):
                     valid_data_keys[data_key] = None
@@ -264,7 +264,7 @@ def validate_hash_with_many(validator, data):
     copy_validator = dict(validator)
     for data_key, data_value in data.iteritems():
         data_valid = False
-        for validator_key, validator_value in copy_validator.items():
+        for validator_key, validator_value in copy_validator.iteritems():
             if validate_common(validator_key, data_key) and \
                     validate_common(validator_value, data_value):
                 if type(validator_key) is not Many:
